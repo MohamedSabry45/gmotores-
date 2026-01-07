@@ -1,0 +1,32 @@
+class RoutesName {
+  static const String firstLanguageScreen = '/first-language';
+  static const String enterMobileScreen = '/enter-mobile';
+  static const String otpVerificationScreen = '/otp';
+  static const String completeProfileScreen = '/complete-profile';
+  static const String loginScreen = '/login';
+  static const String registerScreen = '/register';
+  static const String chooseCarScreen = '/choose-car';
+  static const String addCarScreen = '/add-car';
+  static const String homeScreen = '/home';
+  static const String mainScreen = '/main';
+  static const String jobOrdersScreen = '/job-orders';
+  static const String jobOrderDetailsScreen = '/job-order-details';
+  static const String notificationsScreen = '/notifications';
+  static const String informationBookingsScreen = '/information-bookings';
+  static const String bookingDetailsScreen = '/booking-details';
+  static const String jobEstimatorsScreen = '/job-estimators';
+  static const String jobEstimatorDetailsScreen = '/job-estimator-details';
+
+  static const String menuAccountScreen = '/menu/account';
+  static const String menuDocumentsScreen = '/menu/documents';
+  static const String menuShowroomScreen = '/menu/showroom';
+  static const String menuAboutSkodaScreen = '/menu/about-skoda';
+  static const String menuLoyaltyPointsScreen = '/menu/loyalty-points';
+  static const String menuRescueScreen = '/menu/rescue';
+  static const String menuContactScreen = '/menu/contact';
+  static const String menuAboutCenterScreen = '/menu/about-center';
+  static const String menuSupportMessagesScreen = '/menu/support-messages';
+  static const String menuChangeLanguageScreen = '/menu/change-language';
+  static const String menuUserGuideScreen = '/menu/user-guide';
+  static const String menuLogoutScreen = '/menu/logout';
+}
