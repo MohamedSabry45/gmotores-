@@ -74,6 +74,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         body: LayoutBuilder(
           builder: (context, constraints) {
             final bool isWide = constraints.maxWidth >= 900;
@@ -81,13 +82,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             final titleStyle = const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Colors.black87,
+              color: Colors.white,
             );
 
             final subtitleStyle = const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: AppColors.grey7,
+              color: Colors.white70,
               height: 1.3,
             );
 
@@ -107,22 +108,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   TextFormField(
                     controller: _nameController,
                     validator: ValidationForm.nameValidator,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                     decoration: InputDecoration(
                       hintText: AppTexts.nameHint,
-                      prefixIcon: const Icon(Icons.person_outline),
+                      prefixIcon: const Icon(Icons.person_outline, color: Colors.white70),
                       filled: true,
-                      fillColor: AppColors.brandSurface,
+                      fillColor: const Color(0xFF0F172A),
+                      hintStyle: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandPrimary, width: 1.2),
+                        borderSide: const BorderSide(color: Colors.white, width: 1.2),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     ),
@@ -132,25 +135,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     controller: _passwordController,
                     validator: ValidationForm.passwordValidator,
                     obscureText: _isObscured,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                     decoration: InputDecoration(
                       hintText: AppTexts.passwordHint,
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
                       filled: true,
-                      fillColor: AppColors.brandSurface,
+                      fillColor: const Color(0xFF0F172A),
+                      hintStyle: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandPrimary, width: 1.2),
+                        borderSide: const BorderSide(color: Colors.white, width: 1.2),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
                         onPressed: () {
                           setState(() {
                             _isObscured = !_isObscured;
@@ -165,25 +170,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     controller: _confirmPasswordController,
                     validator: _confirmValidator,
                     obscureText: _isObscured2,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                     decoration: InputDecoration(
                       hintText: AppTexts.confirmPasswordHint,
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
                       filled: true,
-                      fillColor: AppColors.brandSurface,
+                      fillColor: const Color(0xFF0F172A),
+                      hintStyle: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandOutline),
+                        borderSide: const BorderSide(color: Color(0xFF334155)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.brandPrimary, width: 1.2),
+                        borderSide: const BorderSide(color: Colors.white, width: 1.2),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(_isObscured2 ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(_isObscured2 ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
                         onPressed: () {
                           setState(() {
                             _isObscured2 = !_isObscured2;
@@ -274,52 +281,35 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             }
 
             return SafeArea(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
-                      child: Column(
-                        children: [
-                          const LogoImageWidget(),
-                          const SizedBox(height: 14),
-                          Container(
-                            width: double.infinity,
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      children: [
+                        const LogoImageWidget(),
+                        const SizedBox(height: 14),
+                        Card(
+                          color: const Color(0xFF0B0F1A),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Padding(
                             padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(color: const Color(0xFFEFF1F5)),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x14000000),
-                                  blurRadius: 26,
-                                  offset: Offset(0, 14),
-                                ),
-                              ],
-                            ),
                             child: form,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            AppStrings.workshopManagement,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.grey7,
-                            ),
-                            textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          AppStrings.workshopManagement,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white70,
                           ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                 ),

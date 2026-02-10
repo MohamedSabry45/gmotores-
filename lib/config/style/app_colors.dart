@@ -139,4 +139,16 @@ class AppColors {
   static const Color brandOutline = Color(0xFFE6E8EC);
   static const Color brandPrimarySoft = Color(0x1FC20C0C);
   static const Color brandPrimarySoft2 = Color(0x14C20C0C);
+
+  static const List<Color> appBackgroundGradientColors = [
+    Color(0xFF050608),
+    Color(0xFF0B0F1A),
+    Color(0xFF111827),
+  ];
+
+  static const LinearGradient appBackgroundGradient = LinearGradient(
+    colors: appBackgroundGradientColors,
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }

@@ -24,9 +24,24 @@ class BlogRemoteDataSource {
     return '$normalizedBase/$normalizedPath';
   }
 
-  Future<List<BlogPostModel>> getBlogPosts() async {
+  void _applyLocaleFields(Map<String, dynamic> map, {required bool isArabic}) {
+    if (!isArabic) return;
+
+    final rawTitle = map['title']?.toString() ?? '';
+    final rawContent = map['content']?.toString() ?? '';
+
+    final titleAr = (map['title_ar']?.toString() ?? '').trim();
+    final contentAr = (map['content_ar']?.toString() ?? '').trim();
+    map['title'] = titleAr.isNotEmpty ? titleAr : rawTitle;
+    map['content'] = contentAr.isNotEmpty ? contentAr : rawContent;
+  }
+
+  Future<List<BlogPostModel>> getBlogPosts({String? localeCode}) async {
     final baseUrl = AppConstants.kBaseUrl.trim();
     final token = AppConstants.token ?? CacheHelper.getData<String>(key: PrefKeys.kAccessToken);
+
+    final effectiveLocaleCode = localeCode ?? CacheHelper.getData<String>(key: PrefKeys.kLocaleCode);
+    final isArabic = ((effectiveLocaleCode ?? '').trim().toLowerCase()).startsWith('ar');
 
     final uri = Uri.parse('$baseUrl${ApiEndpoints.blog}');
 
@@ -48,6 +63,7 @@ class BlogRemoteDataSource {
     if (decoded is Map && decoded['data'] is List) {
       return (decoded['data'] as List).whereType<Map>().map((e) {
         final map = Map<String, dynamic>.from(e);
+        _applyLocaleFields(map, isArabic: isArabic);
         map['image_url'] = _normalizeImageUrl(baseUrl: baseUrl, imageUrl: map['image_url']?.toString());
         return BlogPostModel.fromJson(map);
       }).toList();
@@ -56,9 +72,12 @@ class BlogRemoteDataSource {
     return const <BlogPostModel>[];
   }
 
-  Future<BlogPostModel?> getBlogDetails({required int id}) async {
+  Future<BlogPostModel?> getBlogDetails({required int id, String? localeCode}) async {
     final baseUrl = AppConstants.kBaseUrl.trim();
     final token = AppConstants.token ?? CacheHelper.getData<String>(key: PrefKeys.kAccessToken);
+
+    final effectiveLocaleCode = localeCode ?? CacheHelper.getData<String>(key: PrefKeys.kLocaleCode);
+    final isArabic = ((effectiveLocaleCode ?? '').trim().toLowerCase()).startsWith('ar');
 
     final uri = Uri.parse('$baseUrl${ApiEndpoints.blogDetails(id: id)}');
 
@@ -79,6 +98,7 @@ class BlogRemoteDataSource {
 
     if (decoded is Map && decoded['data'] is Map) {
       final map = Map<String, dynamic>.from(decoded['data'] as Map);
+      _applyLocaleFields(map, isArabic: isArabic);
       map['image_url'] = _normalizeImageUrl(baseUrl: baseUrl, imageUrl: map['image_url']?.toString());
       return BlogPostModel.fromJson(map);
     }

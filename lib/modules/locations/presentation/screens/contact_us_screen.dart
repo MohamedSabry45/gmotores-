@@ -83,11 +83,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF8F9FD), Color(0xFFFFFFFF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            gradient: AppColors.appBackgroundGradient,
           ),
           child: SafeArea(
             child: Column(
@@ -165,7 +161,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   textAlign: TextAlign.center,
                                   style: textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -193,8 +189,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFF667EEA),
-                                  Color(0xFF764BA2),
+                                  Color(0xFFEF4444),
+                                  Color(0xFFB91C1C),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -202,7 +198,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF667EEA).withOpacity(0.25),
+                                  color: const Color(0xFFEF4444).withOpacity(0.25),
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
                                 ),
@@ -272,7 +268,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                 style: textTheme.titleLarge?.copyWith(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                 ),
                               ),
                               if (items.isNotEmpty) ...[
@@ -280,12 +276,10 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [Color(0xFFEEF2FF), Color(0xFFF3E8FF)],
-                                    ),
+                                    color: AppColors.brandPrimarySoft2,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: const Color(0xFF667EEA).withOpacity(0.2),
+                                      color: AppColors.brandPrimarySoft,
                                     ),
                                   ),
                                   child: Text(
@@ -338,7 +332,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                       'contact_us.empty_title'.tr(),
                                       style: textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
+                                        color: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
@@ -443,8 +437,8 @@ class _ContactLocationCard extends StatelessWidget {
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFFF5F7FF),
-                    Color(0xFFFAF5FF),
+                    Color(0xFFFEF2F2),
+                    Color(0xFFFEE2E2),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -458,14 +452,14 @@ class _ContactLocationCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [
-                          Color(0xFF667EEA),
-                          Color(0xFF764BA2),
+                          Color(0xFFEF4444),
+                          Color(0xFFB91C1C),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF667EEA).withOpacity(0.3),
+                          color: const Color(0xFFEF4444).withOpacity(0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -547,11 +541,7 @@ class _ContactLocationCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFEF2F2), Color(0xFFFEE2E2)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: const Color(0xFFEF4444).withOpacity(0.1),
@@ -594,14 +584,10 @@ class _ContactLocationCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFF3B82F6).withOpacity(0.1),
+                        color: const Color(0xFFEF4444).withOpacity(0.1),
                       ),
                     ),
                     child: Row(
@@ -615,7 +601,7 @@ class _ContactLocationCard extends StatelessWidget {
                           child: Icon(
                             Icons.phone_rounded,
                             size: 18,
-                            color: hasPhone ? const Color(0xFF3B82F6) : Colors.grey.shade400,
+                            color: hasPhone ? const Color(0xFFEF4444) : Colors.grey.shade400,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -710,8 +696,8 @@ class _ActionButton extends StatelessWidget {
             gradient: isPrimary && isEnabled
                 ? const LinearGradient(
                     colors: [
-                      Color(0xFF667EEA),
-                      Color(0xFF764BA2),
+                      Color(0xFFEF4444),
+                      Color(0xFFB91C1C),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -727,14 +713,14 @@ class _ActionButton extends StatelessWidget {
               color: isPrimary && isEnabled
                   ? Colors.transparent
                   : isEnabled
-                      ? const Color(0xFF667EEA).withOpacity(0.3)
+                      ? const Color(0xFFEF4444).withOpacity(0.3)
                       : const Color(0xFFE2E8F0),
               width: 1.5,
             ),
             boxShadow: isPrimary && isEnabled
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF667EEA).withOpacity(0.3),
+                      color: const Color(0xFFEF4444).withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -750,7 +736,7 @@ class _ActionButton extends StatelessWidget {
                 color: isPrimary && isEnabled
                     ? Colors.white
                     : isEnabled
-                        ? const Color(0xFF667EEA)
+                        ? const Color(0xFFEF4444)
                         : const Color(0xFF94A3B8),
               ),
               const SizedBox(height: 6),

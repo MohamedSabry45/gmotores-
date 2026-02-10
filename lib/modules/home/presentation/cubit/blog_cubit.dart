@@ -10,10 +10,10 @@ class BlogCubit extends Cubit<BlogState> {
 
   late final BlogRemoteDataSource _remote = BlogRemoteDataSource();
 
-  Future<void> loadFirst() async {
+  Future<void> loadFirst({String? localeCode}) async {
     emit(BlogLoading());
     try {
-      final posts = await _remote.getBlogPosts();
+      final posts = await _remote.getBlogPosts(localeCode: localeCode);
       emit(BlogSuccess(posts));
     } catch (e) {
       emit(BlogError(e.toString()));

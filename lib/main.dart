@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:ui' as ui;
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reservation_workshop/config/routes/routes_name.dart';
+import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/config/style/app_theme.dart';
 import 'package:reservation_workshop/core/components/toasters.dart';
+import 'package:reservation_workshop/core/notifications/notification_service.dart';
 import 'package:reservation_workshop/core/network/local/cache_helper.dart';
 import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
 import 'package:reservation_workshop/modules/auth/presentation/cubits/auth_cubit/auth_cubit.dart';
@@ -40,7 +43,11 @@ import 'package:reservation_workshop/modules/bookings/presentation/cubits/bookin
 import 'package:reservation_workshop/modules/job_estimators/presentation/cubits/job_estimators_cubit.dart';
 import 'package:reservation_workshop/modules/job_estimators/presentation/screens/job_estimators_screen.dart';
 import 'package:reservation_workshop/modules/home/presentation/screens/home_screen.dart';
+import 'package:reservation_workshop/modules/home/presentation/screens/spare_parts_screen.dart';
+import 'package:reservation_workshop/modules/home/presentation/screens/contact_cars_screen.dart';
+import 'package:reservation_workshop/modules/home/presentation/screens/buy_car_screen.dart';
 import 'package:reservation_workshop/modules/home/presentation/cubit/blog_cubit.dart';
+import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/taxonomy_cubit/taxonomy_cubit.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_about_center_screen.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_about_skoda_screen.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_account_screen.dart';
@@ -52,22 +59,91 @@ import 'package:reservation_workshop/modules/notifications/presentation/screens/
 import 'package:reservation_workshop/modules/loyalty_points/presentation/cubit/loyalty_points_cubit.dart';
 import 'package:reservation_workshop/modules/loyalty_points/presentation/screens/loyalty_points_screen.dart';
 import 'package:reservation_workshop/modules/startup/presentation/first_language_screen.dart';
+import 'package:reservation_workshop/modules/invoices/presentation/screens/invoice_details_screen.dart';
+
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint(
+    '📩 FCM (background) messageId=${message.messageId} '
+    'title=${message.notification?.title} '
+    'body=${message.notification?.body} '
+    'data=${message.data}',
+  );
+}
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await NotificationService.ensureInitialized();
+
+  final settings = await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  debugPrint('🔔 Notification permission status => ${settings.authorizationStatus}');
+
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  debugPrint('✅ CURRENT FCM TOKEN => $fcmToken');
+
+  FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+    debugPrint('🔄 FCM TOKEN REFRESHED => $token');
+  });
+
+  try {
+    await FirebaseMessaging.instance.subscribeToTopic('gmotors_test');
+    debugPrint('✅ Subscribed to topic => gmotors_test');
+  } catch (e) {
+    debugPrint('❌ Failed to subscribe to topic gmotors_test => $e');
+  }
+
+  final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    debugPrint(
+      '📬 FCM (initialMessage) messageId=${initialMessage.messageId} '
+      'title=${initialMessage.notification?.title} '
+      'body=${initialMessage.notification?.body} '
+      'data=${initialMessage.data}',
+    );
+  }
+
+  FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    debugPrint(
+      '📬 FCM (onMessageOpenedApp) messageId=${message.messageId} '
+      'title=${message.notification?.title} '
+      'body=${message.notification?.body} '
+      'data=${message.data}',
+    );
+  });
+
+  FirebaseMessaging.onMessage.listen((message) async {
+    debugPrint(
+      '📩 FCM (foreground) messageId=${message.messageId} '
+      'title=${message.notification?.title} '
+      'body=${message.notification?.body} '
+      'data=${message.data}',
+    );
+    if (message.notification != null) {
+      await NotificationService.showRemoteMessage(message);
+    }
+  });
+
   await EasyLocalization.ensureInitialized();
   await CacheHelper.init();
 
   final savedCode = await CacheHelper.getDataAsync<String>(key: PrefKeys.kLocaleCode);
   final normalized = (savedCode ?? '').trim().toLowerCase();
-  final initialLocale = normalized == 'en' ? const Locale('en') : const Locale('ar');
+  final initialLocale = normalized == 'ar' ? const Locale('ar') : const Locale('en');
 
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('ar'), Locale('en')],
       path: 'assets/translations',
-      fallbackLocale: const Locale('ar'),
+      fallbackLocale: const Locale('en'),
       startLocale: initialLocale,
       child: const MyApp(),
     ),
@@ -85,19 +161,25 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthOtpCubit>(create: (_) => AuthOtpCubit()),
         BlocProvider<AppCubit>(create: (_) => AppCubit()),
         BlocProvider<ShiftCubit>(create: (_) => ShiftCubit()),
+        BlocProvider<BlogCubit>(create: (_) => BlogCubit()),
       ],
       child: MaterialApp(
         scaffoldMessengerKey: Toasters.messengerKey,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
+        theme: AppTheme.dark(locale: context.locale),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
         builder: (context, child) {
           final isAr = context.locale.languageCode == 'ar';
-          return Directionality(
-            textDirection: isAr ? ui.TextDirection.rtl : ui.TextDirection.ltr,
-            child: child ?? const SizedBox.shrink(),
+          return Container(
+            decoration: const BoxDecoration(
+              gradient: AppColors.appBackgroundGradient,
+            ),
+            child: Directionality(
+              textDirection: isAr ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+              child: child ?? const SizedBox.shrink(),
+            ),
           );
         },
         home: const FullscreenSplashScreen(),
@@ -123,12 +205,21 @@ class MyApp extends StatelessWidget {
           RoutesName.addCarScreen: (_) => const AddCarScreen(),
           RoutesName.homeScreen: (_) => MultiBlocProvider(
                 providers: [
-                  BlocProvider<BlogCubit>(create: (_) => BlogCubit()),
                   BlocProvider<CustomerInfoCubit>(create: (_) => CustomerInfoCubit()),
                   BlocProvider<BookingsCubit>(create: (_) => BookingsCubit()),
                 ],
                 child: const HomeScreen(),
               ),
+          RoutesName.sparePartsScreen: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider<TaxonomyCubit>(create: (_) => TaxonomyCubit()),
+                  BlocProvider<CustomerInfoCubit>(create: (_) => CustomerInfoCubit()),
+                ],
+                child: const SparePartsScreen(),
+              ),
+          RoutesName.contactCarsScreen: (_) => const ContactCarsScreen(),
+          RoutesName.buyCarScreen: (_) => const BuyCarScreen(),
+          RoutesName.invoiceDetailsScreen: (_) => const InvoiceDetailsScreen(),
           RoutesName.mainScreen: (_) => MultiBlocProvider(
                 providers: [
                   BlocProvider<CustomerInfoCubit>(create: (_) => CustomerInfoCubit()),

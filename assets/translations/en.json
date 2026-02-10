@@ -1,11 +1,16 @@
 {
+  "common": {
+    "ok": "OK"
+  },
   "menu": {
     "user": "App user",
     "account": "My account",
     "add_booking": "Add booking",
+    "maintenance": "Job Orders",
     "estimator_request": "Estimator request",
+    "invoices": "Invoices",
     "my_car": "My car",
-    "about_vag": "About VAG",
+    "about_vag": "About GMOTORS",
     "rescue": "Rescue service",
     "contact": "Contact us",
     "branches": "Our branches",
@@ -23,8 +28,11 @@
   },
   "tabs": {
     "estimator_request": "Estimator",
-    "maintenance": "Maintenance",
-    "booking": "Booking"
+    "maintenance": "Job Orders",
+    "booking": "Booking",
+    "invoice": "Invoices",
+    "empty_maintenance": "No Job Orders requests",
+    "empty_estimators": "No estimator requests"
   },
   "booking": {
     "greeting": "Hello",
@@ -91,16 +99,21 @@
     "select_car": "Select car",
     "quick_book_now": "Book now",
     "quick_rescue": "Rescue service",
+    "spare_parts": "Spare parts",
+    "contact_cars": "Buy cars",
     "estimators_title": "Estimators",
     "estimators_cta": "Request an estimator",
     "news_title": "News",
     "last_booking_title": "Last booking",
     "no_bookings_yet": "No bookings yet",
     "label_car": "Car",
-    "label_booking_no": "Booking no.",
+    "label_booking_no": "Job Order.",
     "label_service": "Service",
     "label_branch": "Branch",
     "label_date": "Date"
+  },
+  "news": {
+    "title": "News"
   },
   "cars": {
     "title": "My cars",
@@ -146,7 +159,7 @@
     "map": "Map"
   },
   "about": {
-    "vag_title": "About VAG",
+    "vag_title": "About GMOTORS",
     "about_center_title": "About the center",
     "about_center_subtitle": "A brief overview of our experience, services, and quality standards.",
     "no_data": "No data available",
@@ -216,8 +229,9 @@
     "open_map_failed": "Failed to open map"
   },
   "auth": {
-    "app_title": "Workshop management",
-    "enter_mobile_title": "Enter mobile number",
+    "app_title": "Welcome to GMOTORS",
+    "welcome_title": "Welcome to GMOTORS",
+    "enter_mobile_title": "Please enter mobile number",
     "enter_mobile_subtitle": "We will send you a verification code to confirm your number.",
     "mobile_hint": "Mobile number",
     "send_otp": "Send verification code",
@@ -240,5 +254,62 @@
     "title": "Account information",
     "logout": "Logout",
     "delete_account": "Delete account"
+  },
+  "job_order": {
+    "details": {
+      "customer_data": "Customer data",
+      "car_data": "Car data",
+      "service_stages": "Service stages",
+      "remaining_time": "Remaining time",
+      "units": {
+        "day": "day",
+        "hour": "hour",
+        "minute": "minute",
+        "second": "second"
+      }
+    },
+    "maintenance": {
+      "card": {
+        "operation_order_no": "Operation order no.",
+        "booking_date": "Booking date",
+        "location": "Location",
+        "car_type": "Car type"
+      }
+    },
+    "spare_parts_approval": {
+      "title": "Spare parts approval",
+      "select_all": "Select all",
+      "deselect_all": "Deselect all",
+      "approve_total": "Approve total",
+      "approving": "Approving...",
+      "approve_success": "Approved successfully",
+      "approve_failed": "Operation failed",
+      "empty": "No spare parts currently",
+      "selected_total": "Approved total: {}",
+      "legend": {
+        "normal": "Normal",
+        "advisory": "Advisory",
+        "urgent": "Urgent"
+      },
+      "columns": {
+        "item": "Item",
+        "priority": "Priority",
+        "qty": "Qty",
+        "total": "Total"
+      }
+    }
+  },
+  "job_estimators": {
+    "create": {
+      "success_title": "Estimator added successfully",
+      "failed_title": "Failed to add estimator",
+      "estimate_no": "Estimate no.",
+      "errors": {
+        "customer_not_available": "Customer data is not available",
+        "select_car": "Please select a car",
+        "select_branch": "Please select a branch",
+        "amount_invalid": "Amount must be greater than or equal to 0"
+      }
+    }
   }
 }

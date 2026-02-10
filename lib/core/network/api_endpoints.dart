@@ -34,7 +34,7 @@ class ApiEndpoints {
     return '/connector/api/job-estimators?customerId=$customerId';
   }
 
-  static const String createJobEstimator = '/connector/api/job-estimators';
+  static const String createJobEstimator = '/connector/api/job-estimators/store';
 
   // Job estimator details by id and last 4 digits of phone
   static String jobEstimatorDetails({required int id, required String phoneLast4}) {
@@ -61,8 +61,24 @@ class ApiEndpoints {
 
   static const String customerPickupRequest = '/connector/api/add/booking-pickup';
 
+  static String taxonomy({required String type, int? page}) {
+    final base = '/connector/api/taxonomy?type=$type';
+    if (page == null) return base;
+    return '$base&page=$page';
+  }
+
+  static String products({int perPage = -1}) {
+    return '/connector/api/product?per_page=$perPage';
+  }
+
   static const String loyaltyPoints = '/connector/api/loyalty-points';
   static const String loyaltyPointsRedeem = '/connector/api/loyalty-points/redeem';
+
+  static String sellInvoices({required int contactId, int? page}) {
+    final base = '/connector/api/sell?contact_id=$contactId';
+    if (page == null) return base;
+    return '$base&page=$page';
+  }
 
   static const String sendOtp = '/auth/send-otp';
   static const String verifyOtp = '/auth/verify-otp';

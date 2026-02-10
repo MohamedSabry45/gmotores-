@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/widgets/app_card.dart';
@@ -17,8 +18,32 @@ class SparePartsApprovalWidget extends StatefulWidget {
 }
 
 class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
-  String _selected = 'selected';
   bool _isApproving = false;
+
+  JobOrderSparePartModel _withApproval(JobOrderSparePartModel it, int approval) {
+    return JobOrderSparePartModel(
+      id: it.id,
+      jobOrderId: it.jobOrderId,
+      productId: it.productId,
+      deliveredStatus: it.deliveredStatus,
+      outForDeliver: it.outForDeliver,
+      clientApproval: approval,
+      inventoryDelivery: it.inventoryDelivery,
+      price: it.price,
+      purchasePrice: it.purchasePrice,
+      createdAt: it.createdAt,
+      quantity: it.quantity,
+      supplierId: it.supplierId,
+      productStatus: it.productStatus,
+      notes: it.notes,
+      updatedAt: it.updatedAt,
+      jobEstimatorId: it.jobEstimatorId,
+      productName: it.productName,
+      sku: it.sku,
+      productCategoryId: it.productCategoryId,
+      productCategoryName: it.productCategoryName,
+    );
+  }
 
   double get _total {
     var sum = 0.0;
@@ -64,27 +89,7 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
   }
 
   Widget _tab(String value, String label) {
-    final isActive = _selected == value;
-    return InkWell(
-      onTap: () => setState(() => _selected = value),
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.black : const Color(0xFFF2F3F5),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE6E8EC)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
-            color: isActive ? Colors.white : Colors.black87,
-          ),
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _legendDot(Color color, String label) {
@@ -111,12 +116,32 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _selected == 'selected'
-        ? widget.items.where((e) => e.clientApproval == 1).toList()
-        : widget.items.where((e) => e.clientApproval != 1).toList();
+    final filtered = widget.items;
 
     final approveItems = widget.items.where((e) => e.clientApproval == 1).toList();
     final canApprove = approveItems.isNotEmpty && !_isApproving;
+
+    final canApproveAll = !_isApproving && widget.items.any((e) => e.clientApproval != 1);
+    final canDeselectAll = !_isApproving && widget.items.any((e) => e.clientApproval == 1);
+
+    final title = 'job_order.spare_parts_approval.title'.tr();
+    final selectAllLabel = 'job_order.spare_parts_approval.select_all'.tr();
+    final deselectAllLabel = 'job_order.spare_parts_approval.deselect_all'.tr();
+    final legendNormal = 'job_order.spare_parts_approval.legend.normal'.tr();
+    final legendAdvisory = 'job_order.spare_parts_approval.legend.advisory'.tr();
+    final legendUrgent = 'job_order.spare_parts_approval.legend.urgent'.tr();
+    final colItem = 'job_order.spare_parts_approval.columns.item'.tr();
+    final colPriority = 'job_order.spare_parts_approval.columns.priority'.tr();
+    final colQty = 'job_order.spare_parts_approval.columns.qty'.tr();
+    final colTotal = 'job_order.spare_parts_approval.columns.total'.tr();
+    final emptyLabel = 'job_order.spare_parts_approval.empty'.tr();
+    final approveTotalLabel = 'job_order.spare_parts_approval.approve_total'.tr();
+    final approvingLabel = 'job_order.spare_parts_approval.approving'.tr();
+    final approveSuccessLabel = 'job_order.spare_parts_approval.approve_success'.tr();
+    final approveFailedLabel = 'job_order.spare_parts_approval.approve_failed'.tr();
+    final selectedTotalLabel = 'job_order.spare_parts_approval.selected_total'.tr(
+      args: [_formatMoney(_selectedTotal)],
+    );
 
     return AppCard(
       padding: const EdgeInsets.all(16),
@@ -125,26 +150,78 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'sparePartsApproval',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Colors.black87),
-          ),
+          Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Colors.black87)),
           const SizedBox(height: 12),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.start,
             children: [
-              _tab('deselected', 'deselected'),
-              const SizedBox(width: 8),
-              _tab('selected', 'selected'),
+              SizedBox(
+                height: 36,
+                child: FilledButton(
+                  onPressed: canApproveAll
+                      ? () async {
+                          setState(() => _isApproving = true);
+                          await Future<void>.delayed(const Duration(milliseconds: 100));
+                          for (var i = 0; i < widget.items.length; i++) {
+                            final it = widget.items[i];
+                            if (it.clientApproval != 1) {
+                              widget.items[i] = _withApproval(it, 1);
+                            }
+                          }
+                          setState(() => _isApproving = false);
+                        }
+                      : null,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check, size: 16, color: Colors.white),
+                      const SizedBox(width: 6),
+                      Text(selectAllLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 36,
+                child: OutlinedButton(
+                  onPressed: canDeselectAll
+                      ? () {
+                          setState(() {
+                            for (var i = 0; i < widget.items.length; i++) {
+                              final it = widget.items[i];
+                              if (it.clientApproval == 1) {
+                                widget.items[i] = _withApproval(it, 0);
+                              }
+                            }
+                          });
+                        }
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.black),
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Text(deselectAllLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              _legendDot(const Color(0xFF111827), 'Normal'),
+              _legendDot(const Color(0xFF111827), legendNormal),
               const SizedBox(width: 14),
-              _legendDot(const Color(0xFFF59E0B), 'Advisory'),
+              _legendDot(const Color(0xFFF59E0B), legendAdvisory),
               const SizedBox(width: 14),
-              _legendDot(const Color(0xFFEF4444), 'Urgent'),
+              _legendDot(const Color(0xFFEF4444), legendUrgent),
             ],
           ),
           const SizedBox(height: 12),
@@ -154,37 +231,37 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
               color: Colors.black,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(
                   child: Center(
                     child: Text(
-                      'item',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
+                      colItem,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
-                      'priority',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
+                      colPriority,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
-                      'qty',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
+                      colQty,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Center(
                     child: Text(
-                      'total',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
+                      colTotal,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                 ),
@@ -200,12 +277,12 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFE6E8EC)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'لا يوجد قطع غيار حالياً',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.grey7),
+                      emptyLabel,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.grey7),
                     ),
                   ),
                 ],
@@ -216,6 +293,7 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
               children: [
                 ...filtered.map((e) {
                   final lineTotal = e.lineTotal;
+                  final isApproved = e.clientApproval == 1;
                   return Container(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: const BoxDecoration(
@@ -225,6 +303,27 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
                     ),
                     child: Row(
                       children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              final idx = widget.items.indexWhere((x) => x.id == e.id);
+                              if (idx == -1) return;
+                              widget.items[idx] = _withApproval(e, isApproved ? 0 : 1);
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            width: 22,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black, width: 1.6),
+                              borderRadius: BorderRadius.circular(6),
+                              color: isApproved ? Colors.black : Colors.transparent,
+                            ),
+                            child: isApproved ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             e.productName.trim().isEmpty ? '-' : e.productName,
@@ -265,18 +364,18 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
                                 try {
                                   final jobOrderId = approveItems.first.jobOrderId;
                                   final productIds = approveItems.map((e) => e.productId).toSet().toList();
-                                  final msg = await context.read<JobOrderDetailsCubit>().approveProducts(
+                                  await context.read<JobOrderDetailsCubit>().approveProducts(
                                         jobOrderId: jobOrderId,
                                         productIds: productIds,
                                       );
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(msg)),
+                                    SnackBar(content: Text(approveSuccessLabel)),
                                   );
                                 } catch (e) {
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(e.toString())),
+                                    SnackBar(content: Text(approveFailedLabel)),
                                   );
                                 } finally {
                                   if (mounted) setState(() => _isApproving = false);
@@ -290,7 +389,7 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            _isApproving ? 'Approving...' : 'Approve total',
+                            _isApproving ? approvingLabel : approveTotalLabel,
                             textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.white),
                           ),
@@ -299,7 +398,7 @@ class _SparePartsApprovalWidgetState extends State<SparePartsApprovalWidget> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'total: ${_formatMoney(_selectedTotal)}',
+                      selectedTotalLabel,
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
                     ),
                   ],

@@ -28,9 +28,18 @@ class AppTextFormField extends StatelessWidget {
       obscureText: obscureText,
       maxLines: maxLines ?? 1,
       textDirection: textDirection,
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
       decoration: InputDecoration(
         hintText: hintText,
-        suffixIcon: fixIcon,
+        suffixIcon: fixIcon == null
+            ? null
+            : IconTheme(
+                data: const IconThemeData(color: Colors.white70),
+                child: fixIcon!,
+              ),
+        filled: true,
+        fillColor: const Color(0xFF0F172A),
+        hintStyle: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600),
         border: const OutlineInputBorder(),
       ),
     );

@@ -16,8 +16,9 @@ class HomeEstimatorsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       padding: const EdgeInsets.all(16),
+      backgroundGradient: AppColors.appBackgroundGradient,
       borderRadius: 18,
-      borderColor: const Color(0xFFEFF1F5),
+      borderColor: AppColors.gridLinesColor,
       boxShadow: const [
         BoxShadow(
           color: Color(0x14000000),
@@ -36,7 +37,7 @@ class HomeEstimatorsSection extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black87,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -45,7 +46,7 @@ class HomeEstimatorsSection extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.grey7,
+                    color: Colors.white70,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -62,7 +63,11 @@ class HomeEstimatorsSection extends StatelessWidget {
                     ),
                     child: Text(
                       t(context, 'home.estimators_cta', ar: 'اطلب مقايسة الآن', en: 'Request an estimator'),
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -74,12 +79,12 @@ class HomeEstimatorsSection extends StatelessWidget {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.brandPrimarySoft,
+              color: Colors.white.withOpacity(0.10),
               borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(
               Icons.receipt_long,
-              color: AppColors.brandPrimary,
+              color: Colors.white,
               size: 34,
             ),
           ),

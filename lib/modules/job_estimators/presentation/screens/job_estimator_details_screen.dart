@@ -669,19 +669,12 @@ class _JobEstimatorDetailsScreenState extends State<JobEstimatorDetailsScreen> {
         args is JobEstimatorDetailsArgs ? args : null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           _topBar(),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
               child: Builder(builder: (context) {
                 if (detailsArgs == null) {
                   return const Center(

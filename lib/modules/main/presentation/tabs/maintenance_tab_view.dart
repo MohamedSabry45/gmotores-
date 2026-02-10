@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:reservation_workshop/config/routes/routes_name.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
@@ -79,6 +80,7 @@ class _MaintenanceTabViewState extends State<MaintenanceTabView> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return BlocBuilder<JobOrdersCubit, JobOrdersState>(
       builder: (context, state) {
         if (state is JobOrdersLoading) {
@@ -92,8 +94,7 @@ class _MaintenanceTabViewState extends State<MaintenanceTabView> {
               child: Text(
                 state.message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
+                style: textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.grey7,
                 ),
@@ -111,16 +112,17 @@ class _MaintenanceTabViewState extends State<MaintenanceTabView> {
                 jobSheetNo: o.jobSheetNo,
                 status: o.workshop == null || o.workshop!.trim().isEmpty ? 'معلق' : o.workshop!,
                 branch: o.location,
+                carType: '${o.brand} ${o.model} ${o.manufacturingYear}'.trim(),
+                bookingDate: null,
               ),
             )
             .toList();
 
         if (items.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'لا توجد طلبات صيانة',
-              style: TextStyle(
-                fontSize: 12,
+              'tabs.empty_maintenance'.tr(),
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.grey7,
               ),

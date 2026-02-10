@@ -4,6 +4,7 @@ class BlogPostModel extends BlogPost {
   const BlogPostModel({
     required super.id,
     required super.title,
+    required super.content,
     required super.imageUrl,
     required super.blogDate,
   });
@@ -12,6 +13,7 @@ class BlogPostModel extends BlogPost {
     return BlogPostModel(
       id: (json['id'] as num?)?.toInt() ?? 0,
       title: json['title']?.toString() ?? '',
+      content: json['content']?.toString() ?? '',
       imageUrl: json['image_url']?.toString(),
       blogDate: json['blog_date']?.toString() ?? '',
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/modules/bookings/presentation/cubits/add_booking_cubit/add_booking_cubit.dart';
 import 'package:reservation_workshop/modules/bookings/presentation/cubits/add_booking_cubit/add_booking_state.dart';
 import 'package:reservation_workshop/modules/main/presentation/screens/booking_details_args.dart';
@@ -86,11 +87,7 @@ class BookingDetailsScreen extends StatelessWidget {
 
           return Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: AppColors.appBackgroundGradient,
         ),
         child: SafeArea(
           child: Column(

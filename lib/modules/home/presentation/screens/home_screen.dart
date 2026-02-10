@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:ui' as ui;
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:reservation_workshop/core/functions/localization_helper.dart';
 
@@ -18,6 +19,7 @@ import 'package:reservation_workshop/modules/bookings/presentation/cubits/bookin
 
 import '../cubit/blog_cubit.dart';
 import '../cubit/blog_state.dart';
+import '../widgets/home_top_banner.dart';
 import '../widgets/home_estimators_section.dart';
 import '../widgets/home_last_booking_section.dart';
 import '../widgets/home_news_banner_section.dart';
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadSelectedCar();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<BlogCubit>().loadFirst();
+      context.read<BlogCubit>().loadFirst(localeCode: context.locale.languageCode);
       context.read<CustomerInfoCubit>().load();
       try {
         context.read<BookingsCubit>().load();
@@ -188,10 +190,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCenterButtonChild(CustomerCar? selectedCar) {
     final logo = (selectedCar?.carLogo ?? '').trim();
     if (logo.isEmpty) {
-      return const Icon(
-        Icons.handshake_outlined,
-        color: Colors.white,
-        size: 32,
+      return ClipOval(
+        child: SizedBox.expand(
+          child: Image.asset(
+            'assets/images/bummy.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
       );
     }
 
@@ -239,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
           preferredSize: const Size.fromHeight(112),
           child: Container(
             decoration: const BoxDecoration(
-              color: AppColors.brandPrimarySoft,
+              gradient: AppColors.appBackgroundGradient,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
@@ -255,25 +260,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       textDirection: ui.TextDirection.ltr,
                       child: Row(
                         children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, RoutesName.menuAccountScreen);
-                            },
-                            borderRadius: BorderRadius.circular(22),
-                            child: Container(
+                          if (!isLtr(context))
+                            InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(context, RoutesName.menuAccountScreen);
+                              },
+                              borderRadius: BorderRadius.circular(22),
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.brandSurface,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_outline,
+                                  color: Colors.black87,
+                                  size: 24,
+                                ),
+                              ),
+                            )
+                          else
+                            SizedBox(
                               width: 44,
                               height: 44,
-                              decoration: const BoxDecoration(
-                                color: AppColors.brandSurface,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.person_outline,
-                                color: Colors.black87,
-                                size: 24,
+                              child: IconButton(
+                                onPressed: () {
+                                  _scaffoldKey.currentState?.openDrawer();
+                                },
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
                               ),
                             ),
-                          ),
                           const Expanded(
                             child: Center(
                               child: SizedBox(
@@ -282,21 +304,42 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: IconButton(
-                              onPressed: () {
-                                _scaffoldKey.currentState?.openDrawer();
+                          if (!isLtr(context))
+                            SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: IconButton(
+                                onPressed: () {
+                                  _scaffoldKey.currentState?.openDrawer();
+                                },
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                              ),
+                            )
+                          else
+                            InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(context, RoutesName.menuAccountScreen);
                               },
-                              padding: EdgeInsets.zero,
-                              icon: const Icon(
-                                Icons.menu,
-                                color: Colors.black87,
-                                size: 26,
+                              borderRadius: BorderRadius.circular(22),
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.brandSurface,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_outline,
+                                  color: Colors.black87,
+                                  size: 24,
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -348,71 +391,104 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           decoration: const BoxDecoration(
-            color: AppColors.brandPrimarySoft,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
-            ),
+            gradient: AppColors.appBackgroundGradient,
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x33000000),
+                blurRadius: 18,
+                offset: Offset(0, 10),
+              ),
+            ],
           ),
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 70,
+              height: 80,
               child: Directionality(
                 textDirection: ui.TextDirection.ltr,
                 child: Row(
                   children: [
                     Expanded(
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => _selectedBottomIndex = 4);
-                          Navigator.pushNamed(context, RoutesName.menuAccountScreen);
-                        },
-                        icon: Icon(
-                          Icons.person_outline,
-                          color: _selectedBottomIndex == 4 ? AppColors.brandPrimary : Colors.black54,
-                          size: 28,
+                      child: Center(
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() => _selectedBottomIndex = 4);
+                              Navigator.pushNamed(context, RoutesName.menuAccountScreen);
+                            },
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.person_outline,
+                              color: _selectedBottomIndex == 4 ? Colors.white : Colors.white54,
+                              size: 28,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => _selectedBottomIndex = 3);
-                          Navigator.pushNamed(context, RoutesName.mainScreen, arguments: 1);
-                        },
-                        icon: Icon(
-                          Icons.build_outlined,
-                          color: _selectedBottomIndex == 3 ? AppColors.brandPrimary : Colors.black54,
-                          size: 28,
+                      child: Center(
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() => _selectedBottomIndex = 3);
+                              Navigator.pushNamed(context, RoutesName.mainScreen, arguments: 1);
+                            },
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.build_outlined,
+                              color: _selectedBottomIndex == 3 ? Colors.white : Colors.white54,
+                              size: 28,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 80),
                     Expanded(
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => _selectedBottomIndex = 2);
-                          Navigator.pushNamed(context, RoutesName.informationBookingsScreen);
-                        },
-                        icon: Icon(
-                          Icons.assignment_outlined,
-                          color: _selectedBottomIndex == 2 ? AppColors.brandPrimary : Colors.black54,
-                          size: 28,
+                      child: Center(
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() => _selectedBottomIndex = 2);
+                              Navigator.pushNamed(context, RoutesName.informationBookingsScreen);
+                            },
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.assignment_outlined,
+                              color: _selectedBottomIndex == 2 ? Colors.white : Colors.white54,
+                              size: 28,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => _selectedBottomIndex = 0);
-                          Navigator.pushNamed(context, RoutesName.notificationsScreen);
-                        },
-                        icon: Icon(
-                          Icons.notifications_none,
-                          color: _selectedBottomIndex == 0 ? AppColors.brandPrimary : Colors.black54,
-                          size: 28,
+                      child: Center(
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() => _selectedBottomIndex = 0);
+                              Navigator.pushNamed(context, RoutesName.notificationsScreen);
+                            },
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.notifications_none,
+                              color: _selectedBottomIndex == 0 ? Colors.white : Colors.white54,
+                              size: 28,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -424,14 +500,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            gradient: AppColors.appBackgroundGradient,
           ),
           child: SafeArea(
             top: false,
+            bottom: false,
             child: BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
               builder: (context, customerState) {
                 final customerName = customerState is CustomerInfoSuccess ? customerState.info.name.trim() : '';
@@ -476,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final posts = blogState is BlogSuccess ? blogState.posts : const <BlogPost>[];
 
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                       child: Center(
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 520),
@@ -495,7 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w900,
-                                            color: Colors.black87,
+                                            color: Colors.white,
                                           ),
                                         ),
                                         const SizedBox(height: 6),
@@ -507,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(Icons.directions_car_filled_outlined, size: 16, color: AppColors.grey7),
+                                                const Icon(Icons.directions_car_filled_outlined, size: 16, color: Colors.white70),
                                                 const SizedBox(width: 6),
                                                 Text(
                                                   selectedCarLabel.isEmpty
@@ -516,11 +589,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   style: const TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w700,
-                                                    color: AppColors.grey7,
+                                                    color: Colors.white70,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
-                                                const Icon(Icons.keyboard_arrow_down, size: 18, color: AppColors.grey7),
+                                                const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.white70),
                                               ],
                                             ),
                                           ),
@@ -530,6 +603,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 16),
+                              const HomeTopBanner(),
                               const SizedBox(height: 16),
                               HomeQuickActionsSection(
                                 onBookNow: () {

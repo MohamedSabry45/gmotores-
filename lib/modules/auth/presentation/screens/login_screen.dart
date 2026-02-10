@@ -83,6 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         body: LayoutBuilder(
           builder: (context, constraints) {
             final bool isWide = constraints.maxWidth >= 900;
@@ -143,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       maxWidth: isWide ? 560 : 420,
                     ),
                     child: Card(
+                      color: const Color(0xFF0B0F1A),
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Padding(
@@ -153,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             const LogoImageWidget(),
                             const SizedBox(height: 12),
                             Text(
-                              'auth.app_title'.tr(),
+                              'auth.welcome_title'.tr(),
                               style: AppTextStyle.cairoBold36Black,
                               textAlign: TextAlign.center,
                             ),

@@ -74,8 +74,9 @@ class HomeLastBookingSection extends StatelessWidget {
         if (state is BookingsError) {
           return AppCard(
             padding: const EdgeInsets.all(16),
+            backgroundGradient: AppColors.appBackgroundGradient,
             borderRadius: 18,
-            borderColor: const Color(0xFFEFF1F5),
+            borderColor: AppColors.gridLinesColor,
             boxShadow: const [
               BoxShadow(
                 color: Color(0x14000000),
@@ -89,7 +90,7 @@ class HomeLastBookingSection extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.grey7,
+                color: Colors.white70,
               ),
             ),
           );
@@ -101,8 +102,9 @@ class HomeLastBookingSection extends StatelessWidget {
         if (last == null) {
           return AppCard(
             padding: const EdgeInsets.all(16),
+            backgroundGradient: AppColors.appBackgroundGradient,
             borderRadius: 18,
-            borderColor: const Color(0xFFEFF1F5),
+            borderColor: AppColors.gridLinesColor,
             boxShadow: const [
               BoxShadow(
                 color: Color(0x14000000),
@@ -116,10 +118,10 @@ class HomeLastBookingSection extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: AppColors.brandPrimarySoft,
+                    color: Colors.white.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: const Icon(Icons.event_busy, color: AppColors.brandPrimary, size: 34),
+                  child: const Icon(Icons.event_busy, color: Colors.white, size: 34),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -128,7 +130,7 @@ class HomeLastBookingSection extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.grey7,
+                      color: Colors.white70,
                     ),
                   ),
                 ),
@@ -149,8 +151,9 @@ class HomeLastBookingSection extends StatelessWidget {
 
         return AppCard(
           padding: const EdgeInsets.all(12),
+          backgroundGradient: AppColors.appBackgroundGradient,
           borderRadius: 18,
-          borderColor: const Color(0xFFEFF1F5),
+          borderColor: AppColors.gridLinesColor,
           boxShadow: const [
             BoxShadow(
               color: Color(0x14000000),
@@ -166,7 +169,7 @@ class HomeLastBookingSection extends StatelessWidget {
                   Expanded(
                     child: Text(
                       t(context, 'home.last_booking_title', ar: 'آخر حجز', en: 'Last booking'),
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.black87),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                   Container(
@@ -252,14 +255,14 @@ class _CompactInfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.grey7),
+        Icon(icon, size: 16, color: Colors.white70),
         const SizedBox(width: 8),
         Text(
           '$label:',
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: AppColors.grey7,
+            color: Colors.white70,
           ),
         ),
         const SizedBox(width: 8),
@@ -271,7 +274,7 @@ class _CompactInfoRow extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w900,
-              color: Colors.black87,
+              color: Colors.white,
               height: 1.2,
             ),
           ),
@@ -297,13 +300,13 @@ class _CompactInfoCell extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F9),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: AppColors.gridLinesColor),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: AppColors.grey7),
+          Icon(icon, size: 16, color: Colors.white70),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -314,7 +317,7 @@ class _CompactInfoCell extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.grey7,
+                    color: Colors.white70,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -325,7 +328,7 @@ class _CompactInfoCell extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black87,
+                    color: Colors.white,
                     height: 1.2,
                   ),
                 ),

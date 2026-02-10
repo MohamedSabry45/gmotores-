@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/widgets/app_card.dart';
 
@@ -8,6 +9,8 @@ class JobOrderCardModel {
   final String jobSheetNo;
   final String status;
   final String branch;
+  final String carType;
+  final String? bookingDate;
 
   JobOrderCardModel({
     required this.jobOrderId,
@@ -15,6 +18,8 @@ class JobOrderCardModel {
     required this.jobSheetNo,
     required this.status,
     required this.branch,
+    required this.carType,
+    required this.bookingDate,
   });
 }
 
@@ -52,6 +57,7 @@ class JobOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final plate = model.plateNumber?.trim() ?? '';
     final parts = plate.isEmpty ? const _PlateParts(letters: '', numbers: '') : _parsePlate(plate);
 
@@ -64,7 +70,7 @@ class JobOrderCard extends StatelessWidget {
           child: AppCard(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
             borderRadius: 16,
-            borderColor: const Color(0xFFEFF1F5),
+            borderColor: AppColors.brandOutline,
             boxShadow: const [
               BoxShadow(
                 color: Color(0x14000000),
@@ -79,15 +85,15 @@ class JobOrderCard extends StatelessWidget {
               width: 200,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F8FA),
+                color: AppColors.brandSurface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE6E8EC)),
+                border: Border.all(color: AppColors.brandOutline),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 1),
+                  border: Border.all(color: AppColors.brandDark, width: 1),
                 ),
                 child: Column(
                   children: [
@@ -140,14 +146,15 @@ class JobOrderCard extends StatelessWidget {
                             alignment: Alignment.center,
                             decoration: const BoxDecoration(
                               border: Border(
-                                right: BorderSide(color: Colors.black, width: 1),
+                                right: BorderSide(color: AppColors.brandDark, width: 1),
                               ),
                             ),
                             child: Text(
                               (parts.numbers.trim().isEmpty ? '-' : parts.numbers.trim()),
-                              style: const TextStyle(
+                              style: textTheme.bodyMedium?.copyWith(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
+                                color: AppColors.brandDark,
                               ),
                             ),
                           ),
@@ -158,9 +165,10 @@ class JobOrderCard extends StatelessWidget {
                             alignment: Alignment.center,
                             child: Text(
                               (parts.letters.trim().isEmpty ? '-' : parts.letters.trim()),
-                              style: const TextStyle(
+                              style: textTheme.bodyMedium?.copyWith(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
+                                color: AppColors.brandDark,
                               ),
                             ),
                           ),
@@ -176,27 +184,24 @@ class JobOrderCard extends StatelessWidget {
 
             /// ====== TEXT DETAILS ======
             Text(
-              'رقم ورقة العمل: ${model.jobSheetNo}',
-              style: const TextStyle(
-                fontSize: 12,
+              '${'job_order.maintenance.card.operation_order_no'.tr()}: ${model.jobSheetNo}',
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.brandDark,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              model.jobSheetNo,
-              style: const TextStyle(
-                fontSize: 12,
+              '${'job_order.maintenance.card.location'.tr()}: ${model.branch.trim().isEmpty ? '-' : model.branch}',
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.grey7,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              'الموقع: ${model.branch}',
-              style: const TextStyle(
-                fontSize: 12,
+              '${'job_order.maintenance.card.car_type'.tr()}: ${model.carType.trim().isEmpty ? '-' : model.carType}',
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.grey7,
               ),

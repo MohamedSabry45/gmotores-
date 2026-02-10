@@ -43,8 +43,9 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: AppColors.brandSurface,
+          color: AppColors.itemsBackground,
           borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.gridLinesColor),
         ),
         child: Row(
           children: [
@@ -60,7 +61,7 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
-                      color: Colors.black87,
+                      color: Colors.white,
                     ),
                   ),
                   if (hint != null && hint.isNotEmpty) ...[
@@ -70,7 +71,7 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.grey7,
+                        color: Colors.white70,
                       ),
                     ),
                   ],
@@ -110,9 +111,14 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
       child: Directionality(
         textDirection: isAr ? ui.TextDirection.rtl : ui.TextDirection.ltr,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           body: Stack(
             children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: AppColors.appBackgroundGradient,
+                ),
+              ),
               Container(
                 height: _headerHeight,
                 width: double.infinity,
@@ -202,8 +208,9 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.pageBackground,
                           borderRadius: BorderRadius.circular(26),
+                          border: Border.all(color: AppColors.gridLinesColor),
                           boxShadow: const [
                             BoxShadow(
                               color: Color(0x14000000),
@@ -237,6 +244,7 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w900,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 8),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:reservation_workshop/config/style/app_colors.dart';
+
 class BookingDropdownField<T> extends StatelessWidget {
   const BookingDropdownField({
     super.key,
@@ -8,6 +10,11 @@ class BookingDropdownField<T> extends StatelessWidget {
     required this.items,
     required this.onChanged,
     this.isRequired = false,
+    this.labelColor,
+    this.textColor,
+    this.fillColor,
+    this.dropdownColor,
+    this.iconColor,
   });
 
   final String label;
@@ -15,9 +22,16 @@ class BookingDropdownField<T> extends StatelessWidget {
   final T? value;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
+  final Color? labelColor;
+  final Color? textColor;
+  final Color? fillColor;
+  final Color? dropdownColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final effectiveFill = fillColor ?? const Color(0xFFE5E7EB);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,10 +39,9 @@ class BookingDropdownField<T> extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
+              style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: labelColor ?? AppColors.brandDark,
               ),
             ),
             if (isRequired) ...[
@@ -49,21 +62,33 @@ class BookingDropdownField<T> extends StatelessWidget {
           value: value,
           items: items,
           onChanged: onChanged,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          dropdownColor: dropdownColor ?? effectiveFill,
+          style: textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: textColor ?? AppColors.brandDark,
+          ),
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: iconColor ?? textColor ?? AppColors.brandDark,
+          ),
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFFF7F8FA),
+            fillColor: effectiveFill,
+            hintStyle: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.grey7,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE6E8EC)),
+              borderSide: const BorderSide(color: AppColors.brandOutline),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE6E8EC)),
+              borderSide: const BorderSide(color: AppColors.brandOutline),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF0070F0), width: 1.2),
+              borderSide: const BorderSide(color: AppColors.brandPrimary, width: 1.2),
             ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

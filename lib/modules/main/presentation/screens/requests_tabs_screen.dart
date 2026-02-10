@@ -10,6 +10,7 @@ import 'package:reservation_workshop/core/widgets/logo_image_widget.dart';
 import 'package:reservation_workshop/modules/customer/domain/entities/customer_car.dart';
 import 'package:reservation_workshop/modules/main/presentation/tabs/booking_tab_view.dart';
 import 'package:reservation_workshop/modules/main/presentation/tabs/estimators_tab_view.dart';
+import 'package:reservation_workshop/modules/main/presentation/tabs/invoices_tab_view.dart';
 import 'package:reservation_workshop/modules/main/presentation/tabs/maintenance_tab_view.dart';
 import 'package:reservation_workshop/modules/menu/presentation/widgets/menu_drawer.dart';
 import 'package:reservation_workshop/modules/notifications/presentation/cubit/maintenance_notifications_cubit.dart';
@@ -58,9 +59,20 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    const int tabCount = 4;
+
+    if (_controllerInitialized && _tabController.length != tabCount) {
+      _tabController.dispose();
+      _controllerInitialized = false;
+    }
+
     if (!_controllerInitialized) {
       final int initialIndex = (ModalRoute.of(context)?.settings.arguments as int?) ?? 2;
-      _tabController = TabController(length: 3, vsync: this, initialIndex: initialIndex.clamp(0, 2));
+      _tabController = TabController(
+        length: tabCount,
+        vsync: this,
+        initialIndex: initialIndex.clamp(0, tabCount - 1),
+      );
       _tabController.addListener(() {
         if (!mounted) return;
         setState(() {});
@@ -118,10 +130,13 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
     final cached = (cachedLogo ?? '').trim();
     final logo = logoFromApi.isNotEmpty ? logoFromApi : cached;
     if (logo.isEmpty) {
-      return const Icon(
-        Icons.handshake_outlined,
-        color: Colors.white,
-        size: 32,
+      return ClipOval(
+        child: SizedBox.expand(
+          child: Image.asset(
+            'assets/images/bummy.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
       );
     }
 
@@ -187,6 +202,8 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final isEstimatorsTab = _controllerInitialized && _tabController.index == 0;
     return Directionality(
       textDirection: context.locale.languageCode == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr,
@@ -213,7 +230,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
           preferredSize: const Size.fromHeight(112),
           child: Container(
             decoration: const BoxDecoration(
-              color: AppColors.brandPrimarySoft,
+              gradient: AppColors.appBackgroundGradient,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
@@ -267,7 +284,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                               padding: EdgeInsets.zero,
                               icon: const Icon(
                                 Icons.menu,
-                                color: Colors.black87,
+                                color: Colors.white,
                                 size: 26,
                               ),
                             ),
@@ -327,7 +344,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
         ),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
-            color: AppColors.brandPrimarySoft,
+            gradient: AppColors.appBackgroundGradient,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(32),
               topRight: Radius.circular(32),
@@ -349,7 +366,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                         },
                         icon: Icon(
                           Icons.person_outline,
-                          color: _selectedBottomIndex == 4 ? AppColors.brandPrimary : Colors.black54,
+                          color: _selectedBottomIndex == 4 ? Colors.white : Colors.white54,
                           size: 28,
                         ),
                       ),
@@ -362,7 +379,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                         },
                         icon: Icon(
                           Icons.build_outlined,
-                          color: _selectedBottomIndex == 3 ? AppColors.brandPrimary : Colors.black54,
+                          color: _selectedBottomIndex == 3 ? Colors.white : Colors.white54,
                           size: 28,
                         ),
                       ),
@@ -376,7 +393,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                         },
                         icon: Icon(
                           Icons.assignment_outlined,
-                          color: _selectedBottomIndex == 2 ? AppColors.brandPrimary : Colors.black54,
+                          color: _selectedBottomIndex == 2 ? Colors.white : Colors.white54,
                           size: 28,
                         ),
                       ),
@@ -390,7 +407,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                         icon: BlocBuilder<MaintenanceNotificationsCubit, MaintenanceNotificationsState>(
                           builder: (context, state) {
                             final unread = state is MaintenanceNotificationsSuccess ? state.unreadCount : 0;
-                            final iconColor = _selectedBottomIndex == 0 ? AppColors.brandPrimary : Colors.black54;
+                            final iconColor = _selectedBottomIndex == 0 ? Colors.white : Colors.white54;
 
                             return Stack(
                               clipBehavior: Clip.none,
@@ -434,11 +451,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
         ),
           body: Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              gradient: AppColors.appBackgroundGradient,
             ),
             child: SafeArea(
               top: false,
@@ -450,10 +463,10 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 520),
                         child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.all(4),
+                          height: 36,
+                          padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                            color: AppColors.brandPrimarySoft2,
+                            color: AppColors.brandSurface,
                             borderRadius: BorderRadius.circular(22),
                           ),
                           child: TabBar(
@@ -463,15 +476,43 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                               borderRadius: BorderRadius.circular(18),
                             ),
                             labelColor: Colors.white,
-                            unselectedLabelColor: Colors.black87,
+                            unselectedLabelColor: AppColors.brandDark,
                             dividerColor: Colors.transparent,
                             indicatorSize: TabBarIndicatorSize.tab,
-                            labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-                            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                            labelStyle: textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 11,
+                            ),
+                            unselectedLabelStyle: textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 11,
+                              color: AppColors.brandDark,
+                            ),
                             tabs: [
-                              Tab(text: 'tabs.estimator_request'.tr()),
-                              Tab(text: 'tabs.maintenance'.tr()),
-                              Tab(text: 'tabs.booking'.tr()),
+                              Tab(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('tabs.estimator_request'.tr(), maxLines: 1),
+                                ),
+                              ),
+                              Tab(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('tabs.maintenance'.tr(), maxLines: 1),
+                                ),
+                              ),
+                              Tab(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('tabs.booking'.tr(), maxLines: 1),
+                                ),
+                              ),
+                              Tab(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text('tabs.invoice'.tr(), maxLines: 1),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -486,6 +527,7 @@ class _RequestsTabsScreenState extends State<RequestsTabsScreen> with SingleTick
                         EstimatorsTabView(),
                         MaintenanceTabView(),
                         BookingTabView(),
+                        InvoicesTabView(),
                       ],
                     ),
                   ),

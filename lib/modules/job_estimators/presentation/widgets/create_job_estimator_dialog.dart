@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/network/local/cache_helper.dart';
@@ -80,7 +81,7 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
       barrierDismissible: false,
       builder: (ctx) {
         return Directionality(
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           child: AlertDialog(
             title: Text(
               title,
@@ -98,9 +99,9 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text(
-                  'حسناً',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                child: Text(
+                  'common.ok'.tr(),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
                 ),
               ),
             ],
@@ -121,24 +122,26 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
     final customerState = context.watch<CustomerInfoCubit>().state;
     final contactId = customerState is CustomerInfoSuccess ? customerState.info.id : 0;
     final cars = customerState is CustomerInfoSuccess ? customerState.info.cars : const <CustomerCar>[];
+    const dialogTextColor = Colors.white;
+    const inputFillColor = Color(0xFFF7F8FA);
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: BlocConsumer<CreateJobEstimatorCubit, CreateJobEstimatorState>(
         listener: (context, state) async {
           if (state is CreateJobEstimatorSuccess) {
             widget.onCreated();
             await _showResultDialog(
               context,
-              title: 'تم إضافة مقايسة بنجاح',
-              message: state.estimateNo,
+              title: 'job_estimators.create.success_title'.tr(),
+              message: '${'job_estimators.create.estimate_no'.tr()} ${state.estimateNo}'.trim(),
               popAfter: true,
             );
           }
           if (state is CreateJobEstimatorError) {
             await _showResultDialog(
               context,
-              title: 'فشل إضافة مقايسة',
+              title: 'job_estimators.create.failed_title'.tr(),
               message: state.message,
               popAfter: false,
             );
@@ -149,15 +152,16 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
 
           return AlertDialog(
             insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            backgroundColor: AppColors.brandDark,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             actionsPadding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             actionsAlignment: MainAxisAlignment.end,
             actionsOverflowButtonSpacing: 12,
-            title: const Text(
+            title: Text(
               'إضافة مقايسة',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: dialogTextColor),
             ),
             content: SizedBox(
               width: 520,
@@ -169,6 +173,11 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                       label: 'السيارة',
                       isRequired: true,
                       value: _selectedCarId,
+                      labelColor: dialogTextColor,
+                      textColor: Colors.black,
+                      fillColor: inputFillColor,
+                      dropdownColor: inputFillColor,
+                      iconColor: Colors.black,
                       items: cars
                           .map(
                             (c) => DropdownMenuItem<int>(
@@ -190,6 +199,11 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                           label: 'اختر الفرع',
                           isRequired: true,
                           value: _selectedBranchId,
+                          labelColor: dialogTextColor,
+                          textColor: Colors.black,
+                          fillColor: inputFillColor,
+                          dropdownColor: inputFillColor,
+                          iconColor: Colors.black,
                           items: branches
                               .map(
                                 (b) => DropdownMenuItem<int>(
@@ -219,6 +233,11 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                         return BookingDropdownField<int>(
                           label: 'نوع الخدمة',
                           value: _selectedServiceId,
+                          labelColor: dialogTextColor,
+                          textColor: Colors.black,
+                          fillColor: inputFillColor,
+                          dropdownColor: inputFillColor,
+                          iconColor: Colors.black,
                           items: services
                               .map(
                                 (s) => DropdownMenuItem<int>(
@@ -238,10 +257,13 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                       controller: _vehicleDetailsController,
                       maxLines: 4,
                       maxLength: 1000,
+                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
                       decoration: InputDecoration(
                         labelText: 'تفاصيل السيارة',
+                        labelStyle: const TextStyle(color: dialogTextColor, fontWeight: FontWeight.w700),
                         filled: true,
-                        fillColor: const Color(0xFFF7F8FA),
+                        fillColor: inputFillColor,
+                        counterStyle: const TextStyle(color: dialogTextColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Color(0xFFE6E8EC)),
@@ -278,7 +300,7 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                   ),
                   child: const Text(
                     'إلغاء',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: dialogTextColor),
                   ),
                 ),
               ),
@@ -302,8 +324,8 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                           if (contactId <= 0) {
                             _showResultDialog(
                               context,
-                              title: 'فشل إضافة مقايسة',
-                              message: 'بيانات العميل غير متاحة',
+                              title: 'job_estimators.create.failed_title'.tr(),
+                              message: 'job_estimators.create.errors.customer_not_available'.tr(),
                               popAfter: false,
                             );
                             return;
@@ -311,8 +333,8 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                           if (carId == null) {
                             _showResultDialog(
                               context,
-                              title: 'فشل إضافة مقايسة',
-                              message: 'اختر السيارة',
+                              title: 'job_estimators.create.failed_title'.tr(),
+                              message: 'job_estimators.create.errors.select_car'.tr(),
                               popAfter: false,
                             );
                             return;
@@ -320,8 +342,8 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                           if (branchId == null) {
                             _showResultDialog(
                               context,
-                              title: 'فشل إضافة مقايسة',
-                              message: 'اختر الفرع',
+                              title: 'job_estimators.create.failed_title'.tr(),
+                              message: 'job_estimators.create.errors.select_branch'.tr(),
                               popAfter: false,
                             );
                             return;
@@ -331,8 +353,8 @@ class _CreateJobEstimatorDialogState extends State<CreateJobEstimatorDialog> {
                           if (amount != null && amount < 0) {
                             _showResultDialog(
                               context,
-                              title: 'فشل إضافة مقايسة',
-                              message: 'المبلغ يجب أن يكون أكبر من أو يساوي 0',
+                              title: 'job_estimators.create.failed_title'.tr(),
+                              message: 'job_estimators.create.errors.amount_invalid'.tr(),
                               popAfter: false,
                             );
                             return;

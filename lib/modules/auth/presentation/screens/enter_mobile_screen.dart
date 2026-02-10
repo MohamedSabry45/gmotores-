@@ -86,6 +86,7 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
               }
             },
             child: Scaffold(
+              backgroundColor: Colors.transparent,
               body: LayoutBuilder(
                 builder: (context, constraints) {
                   final bool isWide = constraints.maxWidth >= 900;
@@ -93,13 +94,13 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                   final titleStyle = const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black87,
+                    color: Colors.white,
                   );
 
                   final subtitleStyle = const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.grey7,
+                    color: Colors.white70,
                     height: 1.3,
                   );
 
@@ -121,22 +122,24 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                           validator: ValidationForm.nameValidator,
                           keyboardType: TextInputType.phone,
                           textDirection: ui.TextDirection.ltr,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                           decoration: InputDecoration(
                             hintText: 'auth.mobile_hint'.tr(),
-                            prefixIcon: const Icon(Icons.phone_android),
+                            prefixIcon: const Icon(Icons.phone_android, color: Colors.white70),
                             filled: true,
-                            fillColor: AppColors.brandSurface,
+                            fillColor: const Color(0xFF0F172A),
+                            hintStyle: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.brandOutline),
+                              borderSide: const BorderSide(color: Color(0xFF334155)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.brandOutline),
+                              borderSide: const BorderSide(color: Color(0xFF334155)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: AppColors.brandPrimary, width: 1.2),
+                              borderSide: const BorderSide(color: Colors.white, width: 1.2),
                             ),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                           ),
@@ -151,7 +154,7 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                             }
                           },
                           text: 'auth.send_otp'.tr(),
-                          color: AppColors.brandPrimary,
+                          color: const Color.fromARGB(255, 81, 79, 79),
                         ),
                       ],
                     ),
@@ -170,6 +173,7 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                             maxWidth: isWide ? 560 : 420,
                           ),
                           child: Card(
+                            color: const Color(0xFF0B0F1A),
                             elevation: 2,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             child: Padding(
@@ -180,7 +184,7 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                                   const LogoImageWidget(),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'auth.app_title'.tr(),
+                                    'auth.welcome_title'.tr(),
                                     style: AppTextStyle.cairoBold36Black,
                                     textAlign: TextAlign.center,
                                   ),

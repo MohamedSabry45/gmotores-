@@ -146,7 +146,7 @@ class _RescueScreenState extends State<RescueScreen> {
     return Directionality(
       textDirection: context.locale.languageCode == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Column(
             children: [

@@ -40,18 +40,19 @@ class JobEstimatorCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: AppCard(
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 22),
-          borderRadius: 16,
-          borderColor: AppColors.brandPrimary,
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x22000000),
-              blurRadius: 18,
-              offset: Offset(0, 10),
-            ),
-          ],
-          child: Column(
-            children: [
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 22),
+            borderRadius: 16,
+            backgroundColor: AppColors.brandSurface,
+            borderColor: AppColors.brandPrimarySoft,
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.brandPrimarySoft2,
+                blurRadius: 18,
+                offset: Offset(0, 10),
+              ),
+            ],
+            child: Column(
+              children: [
               /// ===== PLATE =====
               Container(
                 width: 200,
@@ -123,6 +124,7 @@ class JobEstimatorCard extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w800,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -134,6 +136,7 @@ class JobEstimatorCard extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w800,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -158,11 +161,12 @@ class JobEstimatorCard extends StatelessWidget {
                 item.color?.trim().isEmpty == true ? '-' : item.color,
               ),
               _InfoLine('الحالة', item.estimatorStatus),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 }
 
@@ -185,7 +189,7 @@ class _InfoLine extends StatelessWidget {
           fontSize: 12,
           height: 1.3,
           fontWeight: bold ? FontWeight.w600 : FontWeight.w500,
-          color: bold ? Colors.black87 : AppColors.grey7,
+          color: bold ? AppColors.brandDark : AppColors.grey7,
         ),
       ),
     );

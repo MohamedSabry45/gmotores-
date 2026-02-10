@@ -1,4 +1,4 @@
-package com.example.reservation_workshop
+package com.gmotors.com
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -29,7 +29,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController();
+
+  /// OTP (5 digits)
+  final List<TextEditingController> _codeControllers =
+      List.generate(5, (_) => TextEditingController());
+  final List<FocusNode> _codeFocusNodes =
+      List.generate(5, (_) => FocusNode());
 
   bool _isObscured = true;
   bool _didPrefill = false;
@@ -54,8 +59,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _mobileController.dispose();
     _passwordController.dispose();
-    _codeController.dispose();
+
+    for (final c in _codeControllers) {
+      c.dispose();
+    }
+    for (final f in _codeFocusNodes) {
+      f.dispose();
+    }
+
     super.dispose();
+  }
+
+  /// ================= OTP WIDGET =================
+  Widget buildCodeInputs() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(5, (index) {
+        return SizedBox(
+          width: 55,
+          child: TextFormField(
+            controller: _codeControllers[index],
+            focusNode: _codeFocusNodes[index],
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 1,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            decoration: InputDecoration(
+              counterText: '',
+              filled: true,
+              fillColor: const Color(0xFF0F172A),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF334155)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.white, width: 1.4),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.isNotEmpty && index < 4) {
+                FocusScope.of(context)
+                    .requestFocus(_codeFocusNodes[index + 1]);
+              } else if (value.isEmpty && index > 0) {
+                FocusScope.of(context)
+                    .requestFocus(_codeFocusNodes[index - 1]);
+              }
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return '';
+              }
+              return null;
+            },
+          ),
+        );
+      }),
+    );
+  }
+
+  String getCodeValue() {
+    return _codeControllers.map((c) => c.text).join();
   }
 
   @override
@@ -86,6 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         body: LayoutBuilder(
           builder: (context, constraints) {
             final bool isWide = constraints.maxWidth >= 900;
@@ -100,12 +172,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: ValidationForm.nameValidator,
                   ),
                   const SizedBox(height: 20),
+
                   AppTextFormField(
                     hintText: 'auth.register_mobile_hint'.tr(),
                     controller: _mobileController,
                     validator: ValidationForm.nameValidator,
                   ),
                   const SizedBox(height: 20),
+
                   AppTextFormField(
                     hintText: 'auth.register_password_hint'.tr(),
                     obscureText: _isObscured,
@@ -114,7 +188,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: ValidationForm.passwordValidator,
                     fixIcon: IconButton(
                       icon: Icon(
-                        _isObscured ? Icons.visibility_off : Icons.visibility,
+                        _isObscured
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -124,27 +200,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  AppTextFormField(
-                    hintText: 'auth.register_code_hint'.tr(),
-                    controller: _codeController,
-                    validator: ValidationForm.nameValidator,
+
+                  /// ===== CODE LABEL + OTP =====
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'auth.register_code_hint'.tr(),
+                        style: AppTextStyle.cairoBold16Black,
+                      ),
+                      const SizedBox(height: 12),
+                      buildCodeInputs(),
+                    ],
                   ),
-                  const SizedBox(height: 20),
+
+                  const SizedBox(height: 24),
+
                   AppSingleButton(
                     height: 50,
-                    width: isWide ? MediaQuery.of(context).size.width / 3 : double.infinity,
+                    width: isWide
+                        ? MediaQuery.of(context).size.width / 3
+                        : double.infinity,
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         cubit.register(
                           name: _nameController.text,
                           mobile: _mobileController.text,
                           password: _passwordController.text,
-                          code: _codeController.text,
+                          code: getCodeValue(),
                         );
                       }
                     },
                     text: 'auth.register_button'.tr(),
-                    color: AppColors.green,
+                    color: const Color.fromARGB(255, 181, 7, 7),
                   ),
                 ],
               ),
@@ -167,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 30),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 50),
                               child: form,
                             ),
                           ],
@@ -182,33 +270,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
             return SafeArea(
               child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 220,
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/splash.png',
-                        fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 24),
+                  child: Column(
+                    children: [
+                      const LogoImageWidget(),
+                      const SizedBox(height: 12),
+                      Text(
+                        'auth.app_title'.tr(),
+                        style: AppTextStyle.cairoBold36Black,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-                      child: Column(
-                        children: [
-                          const LogoImageWidget(),
-                          const SizedBox(height: 12),
-                          Text(
-                            'auth.app_title'.tr(),
-                            style: AppTextStyle.cairoBold36Black,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          form,
-                        ],
+                      const SizedBox(height: 24),
+                      Card(
+                        color: const Color(0xFF0B0F1A),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          child: form,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

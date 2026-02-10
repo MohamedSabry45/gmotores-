@@ -1,4 +1,6 @@
 class AppStrings {
+    static const String welcomeToGMOTORS = 'مرحباً بك في Gmotor';
+
   static const String workshopManagement = 'تسجيل دخول ';
   static const String qrScan = 'Scan QR';
   static const String baseUrl = 'Base URL';

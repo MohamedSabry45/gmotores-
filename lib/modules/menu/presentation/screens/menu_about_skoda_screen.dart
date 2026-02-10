@@ -13,7 +13,7 @@ class MenuAboutSkodaScreen extends StatelessWidget {
     return BlocProvider<AboutUsCubit>(
       create: (_) => AboutUsCubit()..load(),
       child: AboutUsScreen(
-        title: t(context, 'about.vag_title', ar: 'تعرف على فاج', en: 'About VAG'),
+        title: t(context, 'about.vag_title', ar: 'تعرف على GMOTORS', en: 'About GMOTORS'),
       ),
     );
   }

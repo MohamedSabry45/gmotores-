@@ -37,14 +37,11 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: AppColors.appBackgroundGradient,
         ),
         child: SafeArea(
           child: Column(
@@ -59,7 +56,7 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
                   height: 40,
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.brandPrimarySoft2,
+                    color: AppColors.brandSurface,
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: TabBar(
@@ -69,11 +66,18 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
                       borderRadius: BorderRadius.circular(18),
                     ),
                     labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black87,
+                    unselectedLabelColor: AppColors.brandDark,
                     dividerColor: Colors.transparent,
                     indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                    labelStyle: textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                    ),
+                    unselectedLabelStyle: textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      color: AppColors.brandDark,
+                    ),
                     tabs: [
                       Tab(text: 'notifications.unread'.tr()),
                       Tab(text: 'notifications.read'.tr()),
@@ -96,8 +100,7 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
                           child: Text(
                             state.message,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppColors.grey7,
                             ),
@@ -114,8 +117,7 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
                       return Center(
                         child: Text(
                           'notifications.empty'.tr(),
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.grey7,
                           ),
@@ -132,7 +134,10 @@ class _MaintenanceNotificationsScreenState extends State<MaintenanceNotification
                               Expanded(
                                 child: Text(
                                   '',
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.grey7),
+                                  style: textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.grey7,
+                                  ),
                                 ),
                               ),
                               TextButton(
@@ -187,12 +192,12 @@ class _NotificationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     if (items.isEmpty) {
       return Center(
         child: Text(
           emptyText,
-          style: const TextStyle(
-            fontSize: 12,
+          style: textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.grey7,
           ),
@@ -223,6 +228,7 @@ class _NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final payload = item.data;
 
     final title = (payload?.jobSheetNo?.trim().isNotEmpty == true)
@@ -239,10 +245,10 @@ class _NotificationTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: item.isRead ? Colors.white : const Color(0xFFF5F8FF),
+            color: AppColors.brandSurface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: item.isRead ? const Color(0xFFE6E8EC) : const Color(0xFFD9E6FF),
+              color: AppColors.brandOutline,
             ),
           ),
           child: Row(
@@ -251,12 +257,12 @@ class _NotificationTile extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: item.isRead ? const Color(0xFFEFF1F5) : const Color(0xFFE6EEFF),
+                  color: item.isRead ? const Color(0xFFE5E7EB) : AppColors.brandPrimarySoft,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.notifications,
-                  color: item.isRead ? Colors.black54 : const Color(0xFF1D4ED8),
+                  color: item.isRead ? AppColors.grey7 : AppColors.brandPrimary,
                   size: 20,
                 ),
               ),
@@ -269,14 +275,20 @@ class _NotificationTile extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.black87),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.brandDark,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.grey7),
+                      style: textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grey7,
+                      ),
                     ),
                   ],
                 ),

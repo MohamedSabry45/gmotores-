@@ -16,6 +16,7 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
       child: Row(
@@ -26,11 +27,11 @@ class AppHeader extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.brandSurface,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFEFF1F5)),
+                border: Border.all(color: AppColors.brandOutline),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
+              child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.brandDark),
             ),
           ),
           const Spacer(),
@@ -38,18 +39,16 @@ class AppHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: Colors.black87,
                 ),
               ),
               const SizedBox(height: 2),
-              const SizedBox(
+              SizedBox(
                 width: 28,
                 height: 2,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.black87),
+                  decoration: BoxDecoration(color: textTheme.titleMedium?.color ?? Colors.white),
                 ),
               ),
             ],

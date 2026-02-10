@@ -15,6 +15,7 @@ class InformationBookingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) return;
       context.read<BookingsCubit>().load();
@@ -24,11 +25,7 @@ class InformationBookingsScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: AppColors.appBackgroundGradient,
         ),
         child: SafeArea(
           child: Column(
@@ -51,8 +48,7 @@ class InformationBookingsScreen extends StatelessWidget {
                           child: Text(
                             bookingState.message,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppColors.grey7,
                             ),
@@ -85,8 +81,7 @@ class InformationBookingsScreen extends StatelessWidget {
                       return Center(
                         child: Text(
                           getTranslated('booking_info.empty', context) ?? 'No bookings',
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.grey7,
                           ),

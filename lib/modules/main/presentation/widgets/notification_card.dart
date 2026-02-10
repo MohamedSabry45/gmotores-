@@ -91,6 +91,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final style = _statusStyle(model.status);
     final statusLabel = getTranslated(style.statusText, context) ?? style.statusText;
 
@@ -129,7 +130,10 @@ class NotificationCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       getTranslated('booking_card.booking_status', context) ?? 'Booking status',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.grey7),
+                      style: textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grey7,
+                      ),
                     ),
                   ),
                   StatusChip(
@@ -158,20 +162,23 @@ class _RowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       children: [
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.grey7),
+            style: textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.grey7,
+            ),
           ),
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 12,
+          style: textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: valueColor ?? Colors.black87,
+            color: valueColor ?? AppColors.brandDark,
           ),
         ),
       ],

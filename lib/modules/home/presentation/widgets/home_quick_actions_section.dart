@@ -57,8 +57,9 @@ class _ActionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       padding: EdgeInsets.zero,
+      backgroundGradient: AppColors.appBackgroundGradient,
       borderRadius: 18,
-      borderColor: const Color(0xFFEFF1F5),
+      borderColor: AppColors.gridLinesColor,
       boxShadow: const [
         BoxShadow(
           color: Color(0x14000000),
@@ -79,10 +80,10 @@ class _ActionTile extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: accent.withOpacity(0.12),
+                    color: Colors.white.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: accent, size: 22),
+                  child: Icon(icon, color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -91,14 +92,14 @@ class _ActionTile extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w900,
-                      color: Colors.black87,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                const Icon(
-                  Icons.chevron_left,
+                Icon(
+                  isLtr(context) ? Icons.chevron_right : Icons.chevron_right,
                   size: 20,
-                  color: AppColors.grey7,
+                  color: Colors.white70,
                 ),
               ],
             ),

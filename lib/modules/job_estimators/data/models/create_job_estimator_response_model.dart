@@ -10,10 +10,12 @@ class CreateJobEstimatorResponseModel {
   });
 
   factory CreateJobEstimatorResponseModel.fromJson(Map<String, dynamic> json) {
+    final dynamic data = json['data'];
+    final Map<String, dynamic> dataMap = data is Map ? Map<String, dynamic>.from(data) : const <String, dynamic>{};
     return CreateJobEstimatorResponseModel(
       success: json['success'] == true,
-      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
-      estimateNo: json['estimate_no']?.toString() ?? '-',
+      id: int.tryParse(dataMap['id']?.toString() ?? '') ?? 0,
+      estimateNo: dataMap['estimate_no']?.toString() ?? '-',
     );
   }
 }

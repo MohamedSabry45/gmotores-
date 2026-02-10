@@ -79,10 +79,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildCenterButtonChild(CustomerCar? selectedCar) {
     final logo = (selectedCar?.carLogo ?? '').trim();
     if (logo.isEmpty) {
-      return const Icon(
-        Icons.handshake_outlined,
-        color: Colors.white,
-        size: 32,
+      return ClipOval(
+        child: SizedBox.expand(
+          child: Image.asset(
+            'assets/images/bummy.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
       );
     }
 
@@ -166,6 +169,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return MultiBlocListener(
       listeners: [
         BlocListener<CustomerInfoCubit, CustomerInfoState>(
@@ -207,7 +211,7 @@ class _MainScreenState extends State<MainScreen> {
           preferredSize: const Size.fromHeight(100),
           child: Container(
             decoration: const BoxDecoration(
-              color: AppColors.brandPrimarySoft,
+              gradient: AppColors.appBackgroundGradient,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
@@ -259,7 +263,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: EdgeInsets.zero,
                         icon: const Icon(
                           Icons.menu,
-                          color: Colors.black87,
+                          color: Colors.white,
                           size: 26,
                         ),
                       ),
@@ -307,7 +311,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         bottomNavigationBar: Container(
           decoration: const BoxDecoration(
-            color: AppColors.brandPrimarySoft,
+            gradient: AppColors.appBackgroundGradient,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(32),
               topRight: Radius.circular(32),
@@ -328,7 +332,7 @@ class _MainScreenState extends State<MainScreen> {
                       icon: BlocBuilder<MaintenanceNotificationsCubit, MaintenanceNotificationsState>(
                         builder: (context, state) {
                           final unread = state is MaintenanceNotificationsSuccess ? state.unreadCount : 0;
-                          final iconColor = _selectedBottomIndex == 0 ? AppColors.brandPrimary : Colors.black54;
+                          final iconColor = _selectedBottomIndex == 0 ? Colors.white : Colors.white54;
 
                           return Stack(
                             clipBehavior: Clip.none,
@@ -372,7 +376,7 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       icon: Icon(
                         Icons.directions_car_filled_outlined,
-                        color: _selectedBottomIndex == 2 ? AppColors.brandPrimary : Colors.black54,
+                        color: _selectedBottomIndex == 2 ? Colors.white : Colors.white54,
                         size: 28,
                       ),
                     ),
@@ -386,7 +390,7 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       icon: Icon(
                         Icons.build_outlined,
-                        color: _selectedBottomIndex == 3 ? AppColors.brandPrimary : Colors.black54,
+                        color: _selectedBottomIndex == 3 ? Colors.white : Colors.white54,
                         size: 28,
                       ),
                     ),
@@ -399,7 +403,7 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       icon: Icon(
                         Icons.person_outline,
-                        color: _selectedBottomIndex == 4 ? AppColors.brandPrimary : Colors.black54,
+                        color: _selectedBottomIndex == 4 ? Colors.white : Colors.white54,
                         size: 28,
                       ),
                     ),
@@ -411,11 +415,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            gradient: AppColors.appBackgroundGradient,
           ),
           child: SafeArea(
             child: BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
@@ -439,7 +439,8 @@ class _MainScreenState extends State<MainScreen> {
                                       child: AppCard(
                                         padding: const EdgeInsets.all(16),
                                         borderRadius: 18,
-                                        borderColor: const Color(0xFFEFF1F5),
+                                        backgroundColor: AppColors.brandSurface,
+                                        borderColor: AppColors.brandOutline,
                                         boxShadow: const [
                                           BoxShadow(
                                             color: Color(0x14000000),
@@ -452,17 +453,15 @@ class _MainScreenState extends State<MainScreen> {
                                           children: [
                                             Text(
                                               customerName.trim().isEmpty ? 'مرحبا' : 'مرحبا، $customerName',
-                                              style: const TextStyle(
-                                                fontSize: 14,
+                                              style: textTheme.titleSmall?.copyWith(
                                                 fontWeight: FontWeight.w800,
-                                                color: Colors.black87,
+                                                color: AppColors.brandDark,
                                               ),
                                             ),
                                             const SizedBox(height: 4),
-                                            const Text(
+                                            Text(
                                               'احجز موعدك بسهولة',
-                                              style: TextStyle(
-                                                fontSize: 12,
+                                              style: textTheme.bodySmall?.copyWith(
                                                 fontWeight: FontWeight.w500,
                                                 color: AppColors.grey7,
                                               ),
@@ -531,12 +530,11 @@ class _MainScreenState extends State<MainScreen> {
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          const Text(
+                                                          Text(
                                                             'اختر الخدمة',
-                                                            style: TextStyle(
-                                                              fontSize: 12,
+                                                            style: textTheme.bodySmall?.copyWith(
                                                               fontWeight: FontWeight.w600,
-                                                              color: Colors.black87,
+                                                              color: AppColors.brandDark,
                                                             ),
                                                           ),
                                                           const SizedBox(width: 4),
@@ -715,16 +713,17 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2F2F2F) : Colors.white,
+          color: selected ? AppColors.brandPrimary : AppColors.brandSurface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? const Color(0xFF2F2F2F) : const Color(0xFFE6E8EC),
+            color: selected ? AppColors.brandPrimary : AppColors.brandOutline,
           ),
           boxShadow: selected
               ? const [
@@ -742,11 +741,10 @@ class _ServiceCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.bodySmall?.copyWith(
               height: 1.2,
               fontWeight: FontWeight.w700,
-              color: selected ? Colors.white : Colors.black87,
+              color: selected ? Colors.white : AppColors.brandDark,
             ),
           ),
         ),

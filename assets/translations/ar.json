@@ -1,11 +1,16 @@
 {
+  "common": {
+    "ok": "حسناً"
+  },
   "menu": {
     "user": "مستخدم التطبيق",
     "account": "حسابي",
     "add_booking": "إضافة حجز",
+    "maintenance": "أوامر العمل",
     "estimator_request": "طلب مقايسة",
+    "invoices": "فواتير",
     "my_car": "سيارتي",
-    "about_vag": "تعرف على فاج",
+    "about_vag": "تعرف على GMOTORS",
     "rescue": "خدمة الإنقاذ",
     "contact": "اتصل بنا",
     "branches": "فروعنا",
@@ -23,8 +28,11 @@
   },
   "tabs": {
     "estimator_request": "طلب مقايسه",
-    "maintenance": "الصيانة",
-    "booking": "الحجز"
+    "maintenance": "أوامر العمل",
+    "booking": "الحجز",
+    "invoice": "فواتير",
+    "empty_maintenance": "لا توجد طلبات أوامر العمل",
+    "empty_estimators": "لا توجد طلبات مقايسة"
   },
   "booking": {
     "greeting": "مرحبا",
@@ -91,19 +99,25 @@
     "select_car": "اختر السيارة",
     "quick_book_now": "احجز الآن",
     "quick_rescue": "خدمة إنقاذ",
+    "spare_parts": "قطع الغيار",
+    "contact_cars": "شراء السيارات",
     "estimators_title": "المقايسات",
     "estimators_cta": "اطلب مقايسة الآن",
     "news_title": "الاخبار",
     "last_booking_title": "آخر حجز",
     "no_bookings_yet": "لا توجد حجوزات بعد",
     "label_car": "السيارة",
-    "label_booking_no": "رقم الحجز",
+    "label_booking_no": "رقم امر الشغل",
     "label_service": "الخدمة",
     "label_branch": "الفرع",
     "label_date": "التاريخ"
   },
+  "news": {
+    "title": "الاخبار"
+  },
   "auth": {
     "app_title": "تسجيل دخول",
+    "welcome_title": "مرحباً بك في GMOTORS",
     "enter_mobile_title": "ادخل رقم الموبايل",
     "enter_mobile_subtitle": "سنرسل لك رمز تحقق لتأكيد رقمك.",
     "mobile_hint": "رقم الموبايل",
@@ -171,6 +185,38 @@
     "copy": "نسخ",
     "map": "خريطة"
   },
+  "contact_us": {
+    "title": "اتصل بنا",
+    "loading_branches": "جارٍ تحميل الفروع...",
+    "load_failed_title": "تعذر تحميل بيانات التواصل",
+    "load_failed_subtitle": "يرجى المحاولة مرة أخرى",
+    "hero_title": "مركز الدعم والتواصل",
+    "hero_subtitle": "نحن هنا لخدمتك على مدار الساعة",
+    "section_branches": "فروعنا",
+    "section_branches_subtitle": "اختر فرعًا للتواصل أو عرض موقعه على الخريطة",
+    "empty_title": "لا توجد فروع متاحة",
+    "empty_subtitle": "سيتم إضافة الفروع قريباً",
+    "address_unavailable": "لا يوجد عنوان محدد",
+    "phone_unavailable": "رقم الهاتف غير متاح",
+    "phone_unavailable_label": "رقم الهاتف غير متاح",
+    "open_phone_failed": "تعذر فتح الهاتف",
+    "phone_copied": "تم نسخ رقم الهاتف",
+    "call": "اتصال",
+    "copy": "نسخ",
+    "map": "خريطة"
+  },
+  "locations": {
+    "title": "فروعنا",
+    "select_branch": "اختر الفرع",
+    "nearest_branch": "أقرب فرع ({})",
+    "view_map": "عرض الخريطة",
+    "load_failed": "تعذر تحميل الفروع",
+    "empty": "لا توجد فروع",
+    "map_available": "متاح على الخريطة",
+    "no_location": "لا يوجد موقع",
+    "no_map_for_branch": "لا يوجد موقع على الخريطة لهذا الفرع",
+    "open_map_failed": "تعذر فتح الخريطة"
+  },
   "about": {
     "vag_title": "تعرف على فاج",
     "about_center_title": "عن المركز",
@@ -208,5 +254,62 @@
     "redeem_failed": "تعذر ارسال طلب الاستبدال",
     "ok": "حسناً",
     "updated_balance": "تم تحديث رصيد النقاط الخاص بك."
+  },
+  "job_order": {
+    "details": {
+      "customer_data": "بيانات العميل",
+      "car_data": "بيانات السيارة",
+      "service_stages": "مراحل الخدمة",
+      "remaining_time": "الوقت المتبقي",
+      "units": {
+        "day": "يوم",
+        "hour": "ساعة",
+        "minute": "دقيقة",
+        "second": "ثانية"
+      }
+    },
+    "maintenance": {
+      "card": {
+        "operation_order_no": "رقم أمر التشغيل",
+        "booking_date": "تاريخ الحجز",
+        "location": "الموقع",
+        "car_type": "نوع العربية"
+      }
+    },
+    "spare_parts_approval": {
+      "title": "الموافقة على قطع الغيار",
+      "select_all": "تحديد الكل",
+      "deselect_all": "إلغاء الكل",
+      "approve_total": "الموافقة على المجموع",
+      "approving": "جاري الموافقة...",
+      "approve_success": "تمت الموافقة بنجاح",
+      "approve_failed": "فشل تنفيذ العملية",
+      "empty": "لا يوجد قطع غيار حالياً",
+      "selected_total": "المجموع الموافق عليه: {}",
+      "legend": {
+        "normal": "عادي",
+        "advisory": "استشاري",
+        "urgent": "عاجل"
+      },
+      "columns": {
+        "item": "الصنف",
+        "priority": "الأولوية",
+        "qty": "الكمية",
+        "total": "الإجمالي"
+      }
+    }
+  },
+  "job_estimators": {
+    "create": {
+      "success_title": "تم إضافة مقايسة بنجاح",
+      "failed_title": "فشل إضافة مقايسة",
+      "estimate_no": "رقم المقايسة:",
+      "errors": {
+        "customer_not_available": "بيانات العميل غير متاحة",
+        "select_car": "اختر السيارة",
+        "select_branch": "اختر الفرع",
+        "amount_invalid": "المبلغ يجب أن يكون أكبر من أو يساوي 0"
+      }
+    }
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "424907866933",
+    "project_id": "gmotor-fa1ff",
+    "storage_bucket": "gmotor-fa1ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424907866933:android:e9772b91626a9fc44dc27c",
+        "android_client_info": {
+          "package_name": "com.gmotors.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBObzLqiWDfU9r5d2lQUDlL07DA6FC0mBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

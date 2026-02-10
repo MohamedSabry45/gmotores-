@@ -6,6 +6,7 @@ class AppCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(14),
     this.backgroundColor = Colors.white,
+    this.backgroundGradient,
     this.borderColor = const Color(0xFFE6E8EC),
     this.borderRadius = 14,
     this.boxShadow,
@@ -14,6 +15,7 @@ class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
   final Color backgroundColor;
+  final Gradient? backgroundGradient;
   final Color borderColor;
   final double borderRadius;
   final List<BoxShadow>? boxShadow;
@@ -23,7 +25,8 @@ class AppCard extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundGradient == null ? backgroundColor : null,
+        gradient: backgroundGradient,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(color: borderColor),
         boxShadow: boxShadow ?? const [

@@ -8,7 +8,11 @@ class RoutesName {
   static const String chooseCarScreen = '/choose-car';
   static const String addCarScreen = '/add-car';
   static const String homeScreen = '/home';
+  static const String sparePartsScreen = '/spare-parts';
+  static const String contactCarsScreen = '/contact-cars';
+  static const String buyCarScreen = '/buy-car';
   static const String mainScreen = '/main';
+  static const String invoiceDetailsScreen = '/invoice-details';
   static const String jobOrdersScreen = '/job-orders';
   static const String jobOrderDetailsScreen = '/job-order-details';
   static const String notificationsScreen = '/notifications';

@@ -70,7 +70,7 @@ class _ChooseCarScreenState extends State<ChooseCarScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFEDE9F6),
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -110,6 +110,7 @@ class _ChooseCarScreenState extends State<ChooseCarScreen> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
+                                color: AppColors.black,
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -222,6 +223,7 @@ class _CarCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w800,
+            color: AppColors.black,
           ),
         ),
       ],
@@ -302,7 +304,11 @@ class _EgyptPlateWidget extends StatelessWidget {
       ),
       child: Text(
         text.isEmpty ? '-' : text,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          color: AppColors.black,
+        ),
       ),
     );
   }

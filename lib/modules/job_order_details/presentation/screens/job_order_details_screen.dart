@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui' as ui;
 
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/widgets/app_card.dart';
@@ -241,19 +243,12 @@ class JobOrderDetailsScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           _topBar(),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF7FAFF), Color(0xFFF4F7FB)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
               child: BlocBuilder<JobOrderDetailsCubit, JobOrderDetailsState>(
                 builder: (context, state) {
                   if (detailsArgs == null) {
@@ -300,7 +295,7 @@ class JobOrderDetailsScreen extends StatelessWidget {
                   statuses.sort((a, b) => (a.sortOrder ?? 9999).compareTo(b.sortOrder ?? 9999));
 
                   return Directionality(
-                    textDirection: TextDirection.rtl,
+                    textDirection: ui.TextDirection.rtl,
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 360),
@@ -319,7 +314,7 @@ class JobOrderDetailsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _sectionTitle('بيانات العميل'),
+                                    _sectionTitle('job_order.details.customer_data'.tr()),
                                     const SizedBox(height: 8),
                                     _fieldBox(car?.name ?? '-'),
                                     const SizedBox(height: 10),
@@ -339,7 +334,7 @@ class JobOrderDetailsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _sectionTitle('بيانات السيارة'),
+                                    _sectionTitle('job_order.details.car_data'.tr()),
                                     const SizedBox(height: 8),
                                     _fieldBox(car?.catname ?? '-'),
                                     const SizedBox(height: 10),
@@ -363,17 +358,17 @@ class JobOrderDetailsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _sectionTitle('الوقت المتبقي'),
+                                    _sectionTitle('job_order.details.remaining_time'.tr()),
                                     const SizedBox(height: 8),
                                     _fieldBox(details.bookingStart),
                                     const SizedBox(height: 10),
-                                    _fieldBox('${details.days} يوم'),
+                                    _fieldBox('${details.days} ${'job_order.details.units.day'.tr()}'),
                                     const SizedBox(height: 10),
-                                    _fieldBox('${details.hours} ساعة'),
+                                    _fieldBox('${details.hours} ${'job_order.details.units.hour'.tr()}'),
                                     const SizedBox(height: 10),
-                                    _fieldBox('${details.minutes} دقيقة'),
+                                    _fieldBox('${details.minutes} ${'job_order.details.units.minute'.tr()}'),
                                     const SizedBox(height: 10),
-                                    _fieldBox('${details.seconds} ثانية'),
+                                    _fieldBox('${details.seconds} ${'job_order.details.units.second'.tr()}'),
                                   ],
                                 ),
                               ),
@@ -385,7 +380,7 @@ class JobOrderDetailsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _sectionTitle('مراحل الخدمة'),
+                                    _sectionTitle('job_order.details.service_stages'.tr()),
                                     const SizedBox(height: 6),
                                     SizedBox(
                                       height: (statuses.length <= 3) ? null : 198,

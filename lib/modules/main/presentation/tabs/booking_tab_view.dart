@@ -115,6 +115,7 @@ class _BookingTabViewState extends State<BookingTabView> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
       builder: (context, state) {
         final customerName = state is CustomerInfoSuccess ? state.info.name : '';
@@ -137,7 +138,7 @@ class _BookingTabViewState extends State<BookingTabView> {
                         child: AppCard(
                           padding: const EdgeInsets.all(16),
                           borderRadius: 18,
-                          borderColor: const Color(0xFFEFF1F5),
+                          borderColor: AppColors.brandOutline,
                           boxShadow: const [
                             BoxShadow(
                               color: Color(0x14000000),
@@ -150,17 +151,15 @@ class _BookingTabViewState extends State<BookingTabView> {
                             children: [
                               Text(
                                 greeting,
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                style: textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w800,
-                                  color: Colors.black87,
+                                  color: AppColors.brandDark,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'booking.subtitle'.tr(),
-                                style: const TextStyle(
-                                  fontSize: 12,
+                                style: textTheme.bodySmall?.copyWith(
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.grey7,
                                 ),
@@ -233,10 +232,9 @@ class _BookingTabViewState extends State<BookingTabView> {
                                           children: [
                                             Text(
                                               'booking.select_service'.tr(),
-                                              style: const TextStyle(
-                                                fontSize: 12,
+                                              style: textTheme.bodySmall?.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                color: Colors.black87,
+                                                color: AppColors.brandDark,
                                               ),
                                             ),
                                             const SizedBox(width: 4),
@@ -374,8 +372,7 @@ class _BookingTabViewState extends State<BookingTabView> {
                             Text(
                               'booking.can_edit_before_confirm'.tr(),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 12,
+                              style: textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.grey7,
                               ),
@@ -408,16 +405,17 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2F2F2F) : Colors.white,
+          color: selected ? AppColors.brandPrimary : AppColors.brandSurface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? const Color(0xFF2F2F2F) : const Color(0xFFE6E8EC),
+            color: selected ? AppColors.brandPrimary : AppColors.brandOutline,
           ),
           boxShadow: selected
               ? const [
@@ -435,11 +433,10 @@ class _ServiceCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
+            style: textTheme.bodySmall?.copyWith(
               height: 1.2,
               fontWeight: FontWeight.w700,
-              color: selected ? Colors.white : Colors.black87,
+              color: selected ? Colors.white : AppColors.brandDark,
             ),
           ),
         ),

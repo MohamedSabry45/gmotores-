@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reservation_workshop/config/routes/routes_name.dart';
 
 class FullscreenSplashScreen extends StatefulWidget {
@@ -22,6 +23,19 @@ class _FullscreenSplashScreenState extends State<FullscreenSplashScreen> {
   @override
   void initState() {
     super.initState();
+    _requestNotificationPermissionThenNavigate();
+  }
+
+  Future<void> _requestNotificationPermissionThenNavigate() async {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    final token = await FirebaseMessaging.instance.getToken();
+    debugPrint('🔥 FCM TOKEN => $token');
+
     _timer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/startup');
