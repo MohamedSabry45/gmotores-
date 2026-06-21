@@ -6,9 +6,16 @@ class CheckPhoneResultModel extends CheckPhoneResult {
     required super.result,
     required super.code,
     required super.name,
+    super.isSoftDeleted,
+    super.userId,
+    super.message,
   });
 
   factory CheckPhoneResultModel.fromJson(Map<String, dynamic> json) {
+    final isSoftDeleted = json['is_soft_deleted'] == true || json['is_soft_deleted']?.toString() == 'true';
+    final userId = int.tryParse(json['user_id']?.toString() ?? '');
+    final message = json['message']?.toString() ?? '';
+
     final data = (json['data'] as Map?)?.cast<String, dynamic>() ?? const <String, dynamic>{};
     final result = data['result']?.toString() ?? '';
     final code = data['code']?.toString() ?? '';
@@ -22,6 +29,9 @@ class CheckPhoneResultModel extends CheckPhoneResult {
       result: result,
       code: code,
       name: name,
+      isSoftDeleted: isSoftDeleted,
+      userId: userId,
+      message: message,
     );
   }
 }

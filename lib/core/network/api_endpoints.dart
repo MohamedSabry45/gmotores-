@@ -7,12 +7,68 @@ class ApiEndpoints {
   static const String register = '/register';
   static const String login = '/contact/login';
 
+  static const String socialCustomerLogin = '/connector/api/auth/social-customer-login';
+  static const String updateSocialMobile = '/connector/api/auth/update-social-mobile';
+
+  static const String sendPhoneVerificationOtp = '/connector/api/auth/send-phone-verification-otp';
+  static const String verifyPhoneAndSetMobile = '/connector/api/auth/verify-phone-and-set-mobile';
+
+  static const String sendOwnershipOtp = '/connector/api/auth/send-ownership-otp';
+  static const String verifyAndMergeAccounts = '/connector/api/auth/verify-and-merge-accounts';
+
+  static const String forgotPassword = '/contact/forgot-password';
+  static const String resetPassword = '/contact/reset-password';
+
+  static const String softDeleteAccount = '/connector/api/contact/soft-delete';
+
+  static const String restoreDeletedAccount = '/connector/api/auth/restore-deleted-account';
+
   static const String customerInfo = '/connector/api/Info/customer';
   static const String branches = '/connector/api/Branshes';
 
   static const String aboutUs = '/connector/api/about-us';
 
   static const String brands = '/connector/api/brands';
+
+  static const String carMarketVehicles = '/connector/api/carmarket/vehicles';
+
+  static const String carMarketSellerVehicles = '/connector/api/carmarket/seller/vehicles';
+
+  static String carMarketVehicleDetails({required int id}) {
+    return '/connector/api/carmarket/vehicles/$id';
+  }
+
+  static String vehicleInquiry({required int vehicleId}) {
+    return '/connector/api/carmarket/vehicles/$vehicleId/inquiry';
+  }
+
+  static String carMarketFilters({
+    required String type,
+    String? search,
+    int? brandCategoryId,
+    int perPage = 15,
+    int page = 1,
+  }) {
+    final params = <String, String>{
+      'type': type,
+      'per_page': perPage.toString(),
+      'page': page.toString(),
+    };
+    
+    if (search != null && search.isNotEmpty) {
+      params['search'] = search;
+    }
+    
+    if (brandCategoryId != null) {
+      params['brand_category_id'] = brandCategoryId.toString();
+    }
+    
+    final queryString = params.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('&');
+    
+    return '/connector/api/carmarket/filters?$queryString';
+  }
 
   static String models({required int brandId}) {
     return '/connector/api/models/$brandId';
@@ -67,9 +123,7 @@ class ApiEndpoints {
     return '$base&page=$page';
   }
 
-  static String products({int perPage = -1}) {
-    return '/connector/api/product?per_page=$perPage';
-  }
+  static const String sparePartsEcomProducts = '/connector/api/public/ecom-products';
 
   static const String loyaltyPoints = '/connector/api/loyalty-points';
   static const String loyaltyPointsRedeem = '/connector/api/loyalty-points/redeem';
@@ -79,6 +133,10 @@ class ApiEndpoints {
     if (page == null) return base;
     return '$base&page=$page';
   }
+
+  static const String sellProforma = '/connector/api/sell/proforma';
+
+  static const String businessLocation = '/connector/api/business-location';
 
   static const String sendOtp = '/auth/send-otp';
   static const String verifyOtp = '/auth/verify-otp';

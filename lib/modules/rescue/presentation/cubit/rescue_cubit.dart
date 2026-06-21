@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:reservation_workshop/core/network/local/cache_helper.dart';
+import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
 import 'package:reservation_workshop/modules/branch/data/datasources/branch_remote_datasource.dart';
 import 'package:reservation_workshop/modules/branch/data/models/branch_model.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
@@ -16,6 +18,10 @@ class RescueCubit extends Cubit<RescueState> {
   late final RescueRemoteDataSource _remote = RescueRemoteDataSource();
   late final BranchRemoteDataSource _branchRemote = BranchRemoteDataSource();
   late final ServiceRemoteDataSource _serviceRemote = ServiceRemoteDataSource();
+
+  Future<bool> _isGuestMode() async {
+    return await CacheHelper.getDataAsync<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+  }
 
   Future<void> load({required CustomerInfoCubit customerInfoCubit}) async {
     emit(RescueLoading());
@@ -61,6 +67,10 @@ class RescueCubit extends Cubit<RescueState> {
   }
 
   Future<void> submit({required PickupRequestModel request}) async {
+    if (await _isGuestMode()) {
+      emit(RescueGuestNotAllowed());
+      return;
+    }
     final current = state;
     if (current is! RescueLoaded) return;
 

@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/config/style/app_spacing.dart';
 import 'package:reservation_workshop/core/components/toasters.dart';
+import 'package:reservation_workshop/core/widgets/login_required_view.dart';
 import 'package:reservation_workshop/core/widgets/app_header.dart';
 
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
@@ -166,6 +167,9 @@ class _RescueScreenState extends State<RescueScreen> {
                     }
                   },
                   builder: (context, state) {
+                    if (state is RescueGuestNotAllowed) {
+                      return const LoginRequiredView();
+                    }
                     if (state is RescueLoading) {
                       return Center(
                         child: Column(
@@ -620,6 +624,7 @@ class _RescueScreenState extends State<RescueScreen> {
           value: value,
           items: items,
           onChanged: onChanged,
+          dropdownColor: Colors.white,
           validator: (v) => (v == null) ? 'rescue.required_field'.tr() : null,
           icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 24),
           decoration: InputDecoration(

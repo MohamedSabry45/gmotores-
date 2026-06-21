@@ -11,4 +11,5 @@ class PrefKeys {
   static const String kSelectedCarLabel = 'selected_car_label';
   static const String kSelectedCarLogo = 'selected_car_logo';
   static const String kJobOrderPhoneLast4 = 'job_order_phone_last4';
+  static const String kIsGuestMode = 'is_guest_mode';
 }

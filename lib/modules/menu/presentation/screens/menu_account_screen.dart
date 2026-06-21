@@ -7,9 +7,14 @@ import 'package:reservation_workshop/config/routes/routes_name.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/components/dialogs/prograss_delay_dialog.dart';
 import 'package:reservation_workshop/core/components/toasters.dart';
+import 'package:reservation_workshop/constants/app_constants.dart';
+import 'package:reservation_workshop/core/network/local/cache_helper.dart';
+import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
 import 'package:reservation_workshop/modules/customer/domain/entities/customer_car.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_state.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/delete_account_cubit/delete_account_cubit.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/delete_account_cubit/delete_account_state.dart';
 
 class MenuAccountScreen extends StatefulWidget {
   const MenuAccountScreen({super.key});
@@ -20,6 +25,32 @@ class MenuAccountScreen extends StatefulWidget {
 
 class _MenuAccountScreenState extends State<MenuAccountScreen> {
   static const double _headerHeight = 240;
+
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('account.delete_account'.tr()),
+          content: Text('menu.logout_title'.tr()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text('menu.no'.tr()),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text('menu.yes'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<DeleteAccountCubit>().deleteAccount();
+    }
+  }
 
   @override
   void initState() {
@@ -97,17 +128,45 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
   Widget build(BuildContext context) {
     final isAr = context.locale.languageCode == 'ar';
 
-    return BlocListener<CustomerInfoCubit, CustomerInfoState>(
-      listener: (context, state) {
-        if (state is CustomerInfoLoading) {
-          showPrograssDelayDialog(context);
-        } else {
-          Navigator.of(context, rootNavigator: true).maybePop();
-          if (state is CustomerInfoError) {
-            Toasters.show(state.message);
-          }
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CustomerInfoCubit, CustomerInfoState>(
+          listener: (context, state) {
+            if (state is CustomerInfoLoading) {
+              showPrograssDelayDialog(context);
+            } else {
+              Navigator.of(context, rootNavigator: true).maybePop();
+              if (state is CustomerInfoError) {
+                Toasters.show(state.message);
+              }
+            }
+          },
+        ),
+        BlocListener<DeleteAccountCubit, DeleteAccountState>(
+          listener: (context, state) {
+            if (state is DeleteAccountLoading) {
+              showPrograssDelayDialog(context);
+              return;
+            }
+
+            Navigator.of(context, rootNavigator: true).maybePop();
+
+            if (state is DeleteAccountSuccess) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RoutesName.enterMobileScreen,
+                (route) => false,
+              );
+              return;
+            }
+
+            if (state is DeleteAccountError) {
+              Toasters.show(state.message);
+              return;
+            }
+          },
+        ),
+      ],
       child: Directionality(
         textDirection: isAr ? ui.TextDirection.rtl : ui.TextDirection.ltr,
         child: Scaffold(
@@ -273,10 +332,13 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
                                 _item(
                                   icon: Icons.logout,
                                   value: 'account.logout'.tr(),
-                                  onTap: () {
+                                  onTap: () async {
+                                    AppConstants.token = null;
+                                    await CacheHelper.removeData(key: PrefKeys.kAccessToken);
+                                    if (!context.mounted) return;
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
-                                      RoutesName.loginScreen,
+                                      RoutesName.enterMobileScreen,
                                       (route) => false,
                                     );
                                   },
@@ -284,11 +346,19 @@ class _MenuAccountScreenState extends State<MenuAccountScreen> {
 
                                 const SizedBox(height: 10),
 
-                                Text(
-                                  'account.delete_account'.tr(),
-                                  style: const TextStyle(
-                                    color: AppColors.red7,
-                                    fontWeight: FontWeight.w900,
+                                InkWell(
+                                  onTap: () => _confirmDeleteAccount(context),
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    child: Text(
+                                      'account.delete_account'.tr(),
+                                      style: const TextStyle(
+                                        color: AppColors.red7,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
                               ],

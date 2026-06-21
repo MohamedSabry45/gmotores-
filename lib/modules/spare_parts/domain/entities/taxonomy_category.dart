@@ -4,6 +4,7 @@ class TaxonomyCategory {
   final int parentId;
   final String categoryType;
   final List<TaxonomyCategory> subCategories;
+  final String? logo;
 
   const TaxonomyCategory({
     required this.id,
@@ -11,5 +12,6 @@ class TaxonomyCategory {
     required this.parentId,
     required this.categoryType,
     required this.subCategories,
+    this.logo,
   });
 }

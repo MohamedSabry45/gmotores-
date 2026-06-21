@@ -2,9 +2,14 @@ class RoutesName {
   static const String firstLanguageScreen = '/first-language';
   static const String enterMobileScreen = '/enter-mobile';
   static const String otpVerificationScreen = '/otp';
+  static const String socialOtpVerificationScreen = '/social/otp';
   static const String completeProfileScreen = '/complete-profile';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
+  static const String socialUpdateMobileScreen = '/social/update-mobile';
+  static const String socialPhoneOtpScreen = '/social/phone-otp';
+  static const String forgotPasswordScreen = '/forgot-password';
+  static const String resetPasswordScreen = '/reset-password';
   static const String chooseCarScreen = '/choose-car';
   static const String addCarScreen = '/add-car';
   static const String homeScreen = '/home';

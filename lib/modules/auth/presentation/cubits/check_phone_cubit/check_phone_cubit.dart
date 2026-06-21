@@ -14,20 +14,43 @@ class CheckPhoneCubit extends Cubit<CheckPhoneState> {
     AuthRepositoryImpl(AuthRemoteDataSource()),
   );
 
+  void _safeEmit(CheckPhoneState state) {
+    if (isClosed) return;
+    try {
+      emit(state);
+    } on StateError {
+      return;
+    }
+  }
+
   Future<void> checkPhone({required String mobile}) async {
-    emit(CheckPhoneLoading());
+    if (isClosed) return;
+    _safeEmit(CheckPhoneLoading());
 
     final m = mobile.trim();
     if (m.isEmpty) {
-      emit(CheckPhoneError('Required'));
+      if (isClosed) return;
+      _safeEmit(CheckPhoneError('Required'));
       return;
     }
 
     try {
       final result = await _usecase.call(mobile: m);
-      emit(CheckPhoneSuccess(result: result, mobile: m));
+      if (isClosed) return;
+      if (result.isSoftDeleted && (result.userId ?? 0) > 0) {
+        _safeEmit(
+          CheckPhoneRestoreRequired(
+            userId: result.userId!,
+            message: result.message.isNotEmpty ? result.message : 'Account has been deleted. Please restore it to continue.',
+            mobile: m,
+          ),
+        );
+        return;
+      }
+      _safeEmit(CheckPhoneSuccess(result: result, mobile: m));
     } catch (e) {
-      emit(CheckPhoneError(e.toString()));
+      if (isClosed) return;
+      _safeEmit(CheckPhoneError(e.toString()));
     }
   }
 }

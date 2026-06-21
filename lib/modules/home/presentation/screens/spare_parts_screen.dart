@@ -12,6 +12,7 @@ import 'package:reservation_workshop/modules/spare_parts/domain/entities/taxonom
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/products_cubit/products_cubit.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/taxonomy_cubit/taxonomy_cubit.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/taxonomy_cubit/taxonomy_state.dart';
+import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/screens/spare_parts_products_screen.dart';
 
 class SparePartsScreen extends StatefulWidget {
@@ -372,8 +373,12 @@ class _SparePartsScreenState extends State<SparePartsScreen> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) => BlocProvider<ProductsCubit>(
-                                create: (_) => ProductsCubit(),
+                              builder: (_) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider<CartCubit>.value(value: context.read<CartCubit>()),
+                                  BlocProvider<CustomerInfoCubit>.value(value: context.read<CustomerInfoCubit>()),
+                                  BlocProvider<ProductsCubit>(create: (_) => ProductsCubit()),
+                                ],
                                 child: SparePartsProductsScreen(category: category),
                               ),
                             ),
@@ -396,10 +401,21 @@ class _SparePartsScreenState extends State<SparePartsScreen> {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                Image.asset(
-                                  'assets/images/bummy.jpg',
-                                  fit: BoxFit.cover,
-                                ),
+                                category.logo != null && category.logo!.isNotEmpty
+                                    ? Image.network(
+                                        category.logo!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Image.asset(
+                                            'assets/images/bummy.jpg',
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
+                                      )
+                                    : Image.asset(
+                                        'assets/images/bummy.jpg',
+                                        fit: BoxFit.cover,
+                                      ),
                                 DecoratedBox(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(

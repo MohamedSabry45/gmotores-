@@ -15,6 +15,7 @@ class SpareProduct {
   final String? subCategoryName;
 
   final List<ProductCompatibility> compatibility;
+  final String? imageUrl;
 
   const SpareProduct({
     required this.id,
@@ -29,6 +30,7 @@ class SpareProduct {
     required this.subCategoryId,
     required this.subCategoryName,
     required this.compatibility,
+    this.imageUrl,
   });
 }
 

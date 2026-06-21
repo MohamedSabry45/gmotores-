@@ -15,3 +15,5 @@ class AddBookingError extends AddBookingState {
 
   AddBookingError(this.message);
 }
+
+class AddBookingGuestNotAllowed extends AddBookingState {}

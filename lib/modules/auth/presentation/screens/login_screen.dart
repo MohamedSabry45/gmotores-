@@ -9,7 +9,6 @@ import 'package:reservation_workshop/core/components/app_textfield.dart';
 import 'package:reservation_workshop/core/components/dialogs/prograss_delay_dialog.dart';
 import 'package:reservation_workshop/core/components/toasters.dart';
 import 'package:reservation_workshop/core/functions/validationform.dart';
-import 'package:reservation_workshop/core/utils/strings/app_strings.dart';
 import 'package:reservation_workshop/core/widgets/app_single_button.dart';
 import 'package:reservation_workshop/core/widgets/logo_image_widget.dart';
 import 'package:reservation_workshop/modules/auth/presentation/cubits/login_cubit/login_cubit.dart';
@@ -126,6 +125,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     text: 'auth.login_button'.tr(),
                     color: AppColors.brandPrimary,
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          RoutesName.forgotPasswordScreen,
+                          arguments: {'mobile': _userNameController.text},
+                        );
+                      },
+                      child: Text(
+                        'auth.forgot_password'.tr(),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

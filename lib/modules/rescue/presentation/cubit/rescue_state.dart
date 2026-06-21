@@ -33,3 +33,5 @@ class RescueError extends RescueState {
 
   RescueError(this.message);
 }
+
+class RescueGuestNotAllowed extends RescueState {}

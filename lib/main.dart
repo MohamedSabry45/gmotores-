@@ -15,12 +15,20 @@ import 'package:reservation_workshop/modules/auth/presentation/cubits/auth_cubit
 import 'package:reservation_workshop/modules/auth/presentation/cubits/auth_otp_cubit/auth_otp_cubit.dart';
 import 'package:reservation_workshop/modules/auth/presentation/cubits/login_cubit/login_cubit.dart';
 import 'package:reservation_workshop/modules/auth/presentation/cubits/register_cubit/register_cubit.dart';
+import 'package:reservation_workshop/modules/auth/presentation/cubits/forgot_password_cubit/forgot_password_cubit.dart';
+import 'package:reservation_workshop/modules/auth/presentation/cubits/reset_password_cubit/reset_password_cubit.dart';
 import 'package:reservation_workshop/modules/auth/presentation/cubits/shift_cubit/shift_cubit.dart';
 import 'package:reservation_workshop/modules/auth/presentation/screens/complete_profile_screen.dart';
 import 'package:reservation_workshop/modules/auth/presentation/screens/enter_mobile_screen.dart';
 import 'package:reservation_workshop/modules/auth/presentation/screens/login_screen.dart';
 import 'package:reservation_workshop/modules/auth/presentation/screens/otp_verification_screen.dart';
 import 'package:reservation_workshop/modules/auth/presentation/screens/register_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/screens/social_otp_verification_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/screens/social_update_mobile_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/screens/social_phone_otp_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/screens/reset_password_screen.dart';
+import 'package:reservation_workshop/modules/auth/presentation/cubits/social_auth_cubit/social_auth_cubit.dart';
 import 'package:reservation_workshop/modules/branch/presentation/cubits/branch_cubit/branch_cubit.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
 import 'package:reservation_workshop/modules/main/presentation/cubits/app_cubit/app_cubit.dart';
@@ -29,6 +37,8 @@ import 'package:reservation_workshop/modules/main/presentation/screens/booking_d
 import 'package:reservation_workshop/modules/main/presentation/screens/information%20booking%20_screen.dart';
 import 'package:reservation_workshop/modules/main/presentation/screens/requests_tabs_screen.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_rescue_screen.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/delete_account_cubit/delete_account_cubit.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/business_location_cubit/business_location_cubit.dart';
 import 'package:reservation_workshop/modules/startup/presentation/startup_decider_screen.dart';
 import 'package:reservation_workshop/modules/startup/presentation/fullscreen_splash_screen.dart';
 import 'package:reservation_workshop/modules/customer/presentation/screens/choose_car_screen.dart';
@@ -47,7 +57,9 @@ import 'package:reservation_workshop/modules/home/presentation/screens/spare_par
 import 'package:reservation_workshop/modules/home/presentation/screens/contact_cars_screen.dart';
 import 'package:reservation_workshop/modules/home/presentation/screens/buy_car_screen.dart';
 import 'package:reservation_workshop/modules/home/presentation/cubit/blog_cubit.dart';
+import 'package:reservation_workshop/modules/home/presentation/cubit/vehicles_cubit.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/taxonomy_cubit/taxonomy_cubit.dart';
+import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_about_center_screen.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_about_skoda_screen.dart';
 import 'package:reservation_workshop/modules/menu/presentation/screens/menu_account_screen.dart';
@@ -159,9 +171,11 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(create: (_) => AuthCubit()),
         BlocProvider<AuthOtpCubit>(create: (_) => AuthOtpCubit()),
+        BlocProvider<SocialAuthCubit>(create: (_) => SocialAuthCubit()),
         BlocProvider<AppCubit>(create: (_) => AppCubit()),
         BlocProvider<ShiftCubit>(create: (_) => ShiftCubit()),
         BlocProvider<BlogCubit>(create: (_) => BlogCubit()),
+        BlocProvider<BusinessLocationCubit>(create: (_) => BusinessLocationCubit()),
       ],
       child: MaterialApp(
         scaffoldMessengerKey: Toasters.messengerKey,
@@ -188,7 +202,18 @@ class MyApp extends StatelessWidget {
           '/startup': (_) => const StartupDeciderScreen(),
           RoutesName.firstLanguageScreen: (_) => const FirstLanguageScreen(),
           RoutesName.enterMobileScreen: (_) => const EnterMobileScreen(),
+          RoutesName.socialUpdateMobileScreen: (_) => const SocialUpdateMobileScreen(),
+          RoutesName.socialPhoneOtpScreen: (_) => const SocialPhoneOtpScreen(),
+          RoutesName.forgotPasswordScreen: (_) => BlocProvider<ForgotPasswordCubit>(
+                create: (_) => ForgotPasswordCubit(),
+                child: const ForgotPasswordScreen(),
+              ),
+          RoutesName.resetPasswordScreen: (_) => BlocProvider<ResetPasswordCubit>(
+                create: (_) => ResetPasswordCubit(),
+                child: const ResetPasswordScreen(),
+              ),
           RoutesName.otpVerificationScreen: (_) => const OtpVerificationScreen(),
+          RoutesName.socialOtpVerificationScreen: (_) => const SocialOtpVerificationScreen(),
           RoutesName.completeProfileScreen: (_) => const CompleteProfileScreen(),
           RoutesName.loginScreen: (_) => BlocProvider<LoginCubit>(
                 create: (_) => LoginCubit(),
@@ -214,11 +239,15 @@ class MyApp extends StatelessWidget {
                 providers: [
                   BlocProvider<TaxonomyCubit>(create: (_) => TaxonomyCubit()),
                   BlocProvider<CustomerInfoCubit>(create: (_) => CustomerInfoCubit()),
+                  BlocProvider<CartCubit>(create: (_) => CartCubit()),
                 ],
                 child: const SparePartsScreen(),
               ),
           RoutesName.contactCarsScreen: (_) => const ContactCarsScreen(),
-          RoutesName.buyCarScreen: (_) => const BuyCarScreen(),
+          RoutesName.buyCarScreen: (_) => BlocProvider<VehiclesCubit>(
+                create: (_) => VehiclesCubit(),
+                child: const BuyCarScreen(),
+              ),
           RoutesName.invoiceDetailsScreen: (_) => const InvoiceDetailsScreen(),
           RoutesName.mainScreen: (_) => MultiBlocProvider(
                 providers: [
@@ -279,8 +308,11 @@ class MyApp extends StatelessWidget {
               ),
           RoutesName.jobEstimatorDetailsScreen: (_) => const JobEstimatorDetailsScreen(),
 
-          RoutesName.menuAccountScreen: (_) => BlocProvider<CustomerInfoCubit>(
-                create: (_) => CustomerInfoCubit(),
+          RoutesName.menuAccountScreen: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider<CustomerInfoCubit>(create: (_) => CustomerInfoCubit()),
+                  BlocProvider<DeleteAccountCubit>(create: (_) => DeleteAccountCubit()),
+                ],
                 child: const MenuAccountScreen(),
               ),
           RoutesName.menuAboutSkodaScreen: (_) => const MenuAboutSkodaScreen(),

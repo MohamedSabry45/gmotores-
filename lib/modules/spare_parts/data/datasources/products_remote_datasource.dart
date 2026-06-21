@@ -14,11 +14,23 @@ class ProductsRemoteDataSource {
 
   ProductsRemoteDataSource({http.Client? client}) : _client = client ?? http.Client();
 
-  Future<List<SpareProductModel>> getProducts({int perPage = -1}) async {
+  Future<List<SpareProductModel>> getProducts({
+    int perPage = 30,
+    int page = 1,
+    int businessId = 1,
+    int locationId = 1,
+  }) async {
     final baseUrl = AppConstants.kBaseUrl.trim();
     final token = AppConstants.token ?? CacheHelper.getData<String>(key: PrefKeys.kAccessToken);
 
-    final uri = Uri.parse('$baseUrl${ApiEndpoints.products(perPage: perPage)}');
+    final uri = Uri.parse('$baseUrl${ApiEndpoints.sparePartsEcomProducts}').replace(
+      queryParameters: <String, String>{
+        'business_id': businessId.toString(),
+        'location_id': locationId.toString(),
+        'per_page': perPage.toString(),
+        'page': page.toString(),
+      },
+    );
 
     final headers = <String, String>{
       'Accept': 'application/json',

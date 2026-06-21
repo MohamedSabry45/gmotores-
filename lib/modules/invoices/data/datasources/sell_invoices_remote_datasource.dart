@@ -9,13 +9,14 @@ import 'package:reservation_workshop/core/network/local/cache_helper.dart';
 import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
 
 import '../models/sell_invoice_model.dart';
+import '../models/sell_invoices_response_model.dart';
 
 class SellInvoicesRemoteDataSource {
   final http.Client _client;
 
   SellInvoicesRemoteDataSource({http.Client? client}) : _client = client ?? http.Client();
 
-  Future<List<SellInvoiceModel>> getSellInvoices({required int contactId}) async {
+  Future<SellInvoicesResponseModel> getSellInvoicesResponse({required int contactId}) async {
     final baseUrl = AppConstants.kBaseUrl.trim();
     final accessToken = AppConstants.token ?? CacheHelper.getData<String>(key: PrefKeys.kAccessToken);
     final configToken = AppConstants.configToken ?? CacheHelper.getData<String>(key: PrefKeys.kConfigTokenCode);
@@ -44,23 +45,15 @@ class SellInvoicesRemoteDataSource {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       final snippet = res.body.length > 1200 ? res.body.substring(0, 1200) : res.body;
       debugPrint('[InvoicesAPI] FAILED status=${res.statusCode} body=$snippet');
-    }
-
-    if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception(_extractMessage(decoded) ?? 'Request failed');
     }
 
-    final data = decoded['data'];
-    final invoices = <SellInvoiceModel>[];
-    if (data is List) {
-      for (final item in data) {
-        if (item is Map<String, dynamic>) {
-          invoices.add(SellInvoiceModel.fromJson(item));
-        }
-      }
-    }
+    return SellInvoicesResponseModel.fromJson(decoded);
+  }
 
-    return invoices;
+  Future<List<SellInvoiceModel>> getSellInvoices({required int contactId}) async {
+    final response = await getSellInvoicesResponse(contactId: contactId);
+    return response.data;
   }
 
   Map<String, dynamic> _decodeJson(String body) {

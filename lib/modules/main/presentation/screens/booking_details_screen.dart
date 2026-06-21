@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui' as ui;
 
 import 'package:reservation_workshop/config/style/app_colors.dart';
+import 'package:reservation_workshop/core/widgets/login_required_view.dart';
 import 'package:reservation_workshop/modules/bookings/presentation/cubits/add_booking_cubit/add_booking_cubit.dart';
 import 'package:reservation_workshop/modules/bookings/presentation/cubits/add_booking_cubit/add_booking_state.dart';
 import 'package:reservation_workshop/modules/main/presentation/screens/booking_details_args.dart';
@@ -22,8 +25,9 @@ class BookingDetailsScreen extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
+        final isRtl = ctx.locale.languageCode == 'ar';
         return Directionality(
-          textDirection: TextDirection.rtl,
+          textDirection: isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr,
           child: AlertDialog(
             title: Text(
               title,
@@ -83,6 +87,9 @@ class BookingDetailsScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          if (state is AddBookingGuestNotAllowed) {
+            return const LoginRequiredView();
+          }
           final isLoading = state is AddBookingLoading;
 
           return Container(

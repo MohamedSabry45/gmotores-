@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:reservation_workshop/config/routes/routes_name.dart';
 import 'package:reservation_workshop/config/style/app_spacing.dart';
 import 'package:reservation_workshop/core/widgets/app_card.dart';
+import 'package:reservation_workshop/core/widgets/login_required_view.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_state.dart';
 import 'package:reservation_workshop/modules/invoices/presentation/cubits/invoices_cubit/invoices_cubit.dart';
@@ -52,6 +53,10 @@ class _InvoicesTabBodyState extends State<_InvoicesTabBody> {
     return BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
       builder: (context, customerState) {
         final contactId = customerState is CustomerInfoSuccess ? customerState.info.id : 0;
+
+        if (contactId == 0) {
+          return const LoginRequiredView();
+        }
 
         if (customerState is CustomerInfoLoading || contactId == 0) {
           return const Center(

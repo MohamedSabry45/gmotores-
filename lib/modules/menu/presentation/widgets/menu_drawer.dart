@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:reservation_workshop/core/components/toasters.dart';
 import 'dart:ui' as ui;
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:reservation_workshop/modules/menu/data/models/business_location_model.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/business_location_cubit/business_location_cubit.dart';
+import 'package:reservation_workshop/modules/menu/presentation/cubits/business_location_cubit/business_location_state.dart';
+
+import 'package:reservation_workshop/constants/app_constants.dart';
 import 'package:reservation_workshop/config/routes/routes_name.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/network/local/cache_helper.dart';
@@ -21,11 +28,22 @@ class MenuDrawer extends StatefulWidget {
 class _MenuDrawerState extends State<MenuDrawer> {
   int? _selectedCarId;
   String? _selectedCarLabel;
+  bool _isGuest = false;
 
   @override
   void initState() {
     super.initState();
+    _loadGuestMode();
     _loadSelectedCar();
+    BusinessLocationCubit.get(context).fetchBusinessLocation();
+  }
+
+  Future<void> _loadGuestMode() async {
+    final isGuest = await CacheHelper.getDataAsync<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+    if (!mounted) return;
+    setState(() {
+      _isGuest = isGuest;
+    });
   }
 
   Future<void> _loadSelectedCar() async {
@@ -36,6 +54,19 @@ class _MenuDrawerState extends State<MenuDrawer> {
       _selectedCarId = carId;
       _selectedCarLabel = carLabel;
     });
+  }
+
+  Future<void> _guardGuest(VoidCallback action) async {
+    if (_isGuest) {
+      if (!mounted) return;
+      Navigator.of(context).maybePop();
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        RoutesName.enterMobileScreen,
+        (route) => false,
+      );
+      return;
+    }
+    action();
   }
 
   String _carLabel(CustomerCar car) {
@@ -227,7 +258,15 @@ class _MenuDrawerState extends State<MenuDrawer> {
                                       Expanded(
                                         child: BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
                                           builder: (context, state) {
-                                            final name = state is CustomerInfoSuccess ? state.info.name : 'User';
+                                            String name;
+                                            if (_isGuest) {
+                                              name = 'common.guest'.tr();
+                                            } else if (state is CustomerInfoSuccess) {
+                                              name = state.info.name.trim();
+                                              if (name.isEmpty) name = 'menu.user'.tr();
+                                            } else {
+                                              name = 'menu.user'.tr();
+                                            }
                                             return Text(
                                               name,
                                               maxLines: 1,
@@ -367,7 +406,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                             _MenuItem(
                               title: 'menu.points'.tr(),
                               icon: Icons.workspace_premium_outlined,
-                              onTap: () => _go(context, RoutesName.menuLoyaltyPointsScreen),
+                              onTap: () => _guardGuest(() => _go(context, RoutesName.menuLoyaltyPointsScreen)),
                             ),
                             _MenuItem(
                               title: 'menu.logout'.tr(),
@@ -392,27 +431,66 @@ class _MenuDrawerState extends State<MenuDrawer> {
                                   },
                                 );
                                 if (confirmed == true) {
+                                  AppConstants.token = null;
+                                  await CacheHelper.removeData(key: PrefKeys.kAccessToken);
                                   Navigator.of(context).pushNamedAndRemoveUntil(
-                                    RoutesName.loginScreen,
+                                    RoutesName.enterMobileScreen,
                                     (route) => false,
                                   );
                                 }
                               },
                             ),
                             const SizedBox(height: 12),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 2),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  _SocialCircle(icon: Icons.call),
-                                  _SocialCircle(icon: Icons.public),
-                                  _SocialCircle(icon: Icons.work),
-                                  _SocialCircle(icon: Icons.play_arrow),
-                                  _SocialCircle(icon: Icons.camera_alt),
-                                  _SocialCircle(icon: Icons.share),
-                                ],
-                              ),
+                            BlocBuilder<BusinessLocationCubit, BusinessLocationState>(
+                              builder: (context, state) {
+                                BusinessLocation? location;
+                                bool isLoading = state is BusinessLocationLoading;
+
+                                if (state is BusinessLocationSuccess) {
+                                  location = state.location;
+                                }
+
+                                final socialItems = _buildSocialItems(location, isLoading: isLoading);
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    alignment: WrapAlignment.center,
+                                    children: socialItems.isNotEmpty
+                                        ? socialItems
+                                        : [
+                                            // Default icons when no data - show message when tapped
+                                            _SocialCircle(
+                                              icon: Icons.call,
+                                              isLoading: isLoading,
+                                              onTap: isLoading ? null : () => Toasters.show('contact.phone_not_available'.tr()),
+                                            ),
+                                            _SocialCircle(
+                                              icon: Icons.facebook,
+                                              isLoading: isLoading,
+                                              onTap: isLoading ? null : () => Toasters.show('common.cannot_open'.tr()),
+                                            ),
+                                            _SocialCircle(
+                                              icon: Icons.camera_alt,
+                                              isLoading: isLoading,
+                                              onTap: isLoading ? null : () => Toasters.show('common.cannot_open'.tr()),
+                                            ),
+                                            _SocialCircle(
+                                              icon: Icons.public,
+                                              isLoading: isLoading,
+                                              onTap: isLoading ? null : () => Toasters.show('common.cannot_open'.tr()),
+                                            ),
+                                            _SocialCircle(
+                                              icon: Icons.share,
+                                              isLoading: isLoading,
+                                              onTap: isLoading ? null : () => Toasters.show('common.cannot_open'.tr()),
+                                            ),
+                                          ],
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 18),
                             const Center(
@@ -439,6 +517,130 @@ class _MenuDrawerState extends State<MenuDrawer> {
   static void _go(BuildContext context, String route) {
     Navigator.of(context).maybePop();
     Navigator.of(context).pushNamed(route);
+  }
+
+  List<Widget> _buildSocialItems(BusinessLocation? location, {bool isLoading = false}) {
+    // If no location data at all, return empty to use default icons
+    if (location == null) {
+      return [];
+    }
+
+    final items = <Widget>[];
+
+    // Phone
+    final hasMobile = location.mobile != null && location.mobile!.isNotEmpty;
+    items.add(_SocialCircle(
+      icon: Icons.call,
+      onTap: hasMobile ? () => _callPhone(location.mobile!) : null,
+      isLoading: isLoading && !hasMobile,
+    ));
+
+    // Facebook
+    final hasFacebook = location.customField2 != null && location.customField2!.isNotEmpty;
+    items.add(_SocialCircle(
+      icon: Icons.facebook,
+      onTap: hasFacebook ? () => _launchUrl(location.customField2!) : null,
+      isLoading: isLoading && !hasFacebook,
+    ));
+
+    // Instagram
+    final hasInstagram = location.customField1 != null && location.customField1!.isNotEmpty;
+    items.add(_SocialCircle(
+      icon: Icons.camera_alt,
+      onTap: hasInstagram ? () => _launchUrl(location.customField1!) : null,
+      isLoading: isLoading && !hasInstagram,
+    ));
+
+    // Website
+    final hasWebsite = location.website != null && location.website!.isNotEmpty;
+    items.add(_SocialCircle(
+      icon: Icons.public,
+      onTap: hasWebsite ? () => _launchUrl(location.website!) : null,
+      isLoading: isLoading && !hasWebsite,
+    ));
+
+    // Share
+    final hasShare = location.customField3 != null && location.customField3!.isNotEmpty;
+    items.add(_SocialCircle(
+      icon: Icons.share,
+      onTap: hasShare ? () => _launchUrl(location.customField3!) : null,
+      isLoading: isLoading && !hasShare,
+    ));
+
+    return items;
+  }
+
+  Future<void> _callPhone(String phone) async {
+    final cleanedPhone = phone
+        .replaceAll(' ', '')
+        .replaceAll('-', '')
+        .replaceAll('(', '')
+        .replaceAll(')', '');
+
+    final Uri uri = Uri(
+      scheme: 'tel',
+      path: cleanedPhone,
+    );
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.platformDefault,
+      );
+
+      if (!launched && mounted) {
+        Toasters.show('common.cannot_open'.tr());
+      }
+    } catch (e) {
+      debugPrint('CALL ERROR: $e');
+      if (mounted) {
+        Toasters.show('common.cannot_open'.tr());
+      }
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final raw = url.trim();
+    debugPrint('🚀 _launchUrl called with: "$raw"');
+    if (raw.isEmpty) {
+      debugPrint('❌ URL is empty');
+      return;
+    }
+
+    Uri uri;
+    try {
+      uri = Uri.parse(raw);
+    } catch (e) {
+      debugPrint('❌ Failed to parse URL: $e');
+      if (mounted) Toasters.show('common.cannot_open'.tr());
+      return;
+    }
+
+    // Normalize URLs - add https if no scheme
+    if (uri.scheme.isEmpty && !raw.startsWith('tel:')) {
+      uri = Uri.parse('https://$raw');
+      debugPrint('🌐 Converted to HTTPS URI: $uri');
+    }
+
+    // Launch URLs (not phone numbers)
+    bool launched = false;
+    try {
+      debugPrint('🚀 Launching URL: $uri');
+      launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        // Fallback to platformDefault
+        debugPrint('🔄 Trying fallback with platformDefault');
+        launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      debugPrint('❌ Exception during launch: $e');
+      launched = false;
+    }
+
+    debugPrint('✅ Launch result: $launched');
+    if (!launched && mounted) {
+      Toasters.show('common.cannot_open'.tr());
+    }
   }
 }
 
@@ -493,20 +695,41 @@ class _MenuItem extends StatelessWidget {
 }
 
 class _SocialCircle extends StatelessWidget {
-  const _SocialCircle({required this.icon});
+  const _SocialCircle({required this.icon, this.onTap, this.isLoading = false});
 
   final IconData icon;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: const BoxDecoration(
-        color: AppColors.itemsBackground,
-        shape: BoxShape.circle,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(19),
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: const BoxDecoration(
+          color: AppColors.itemsBackground,
+          shape: BoxShape.circle,
+        ),
+        child: isLoading
+            ? const Center(
+                child: SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white38,
+                  ),
+                ),
+              )
+            : Icon(
+                icon,
+                size: 18,
+                color: onTap != null ? Colors.white54 : Colors.white24,
+              ),
       ),
-      child: Icon(icon, size: 18, color: Colors.white54),
     );
   }
 }

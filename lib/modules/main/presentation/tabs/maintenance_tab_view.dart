@@ -7,6 +7,7 @@ import 'package:reservation_workshop/config/routes/routes_name.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/core/network/local/cache_helper.dart';
 import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
+import 'package:reservation_workshop/core/widgets/login_required_view.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
 import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_state.dart';
 import 'package:reservation_workshop/modules/job_order_details/presentation/screens/job_order_details_args.dart';
@@ -28,6 +29,8 @@ class _MaintenanceTabViewState extends State<MaintenanceTabView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final isGuest = CacheHelper.getData<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+      if (isGuest) return;
       final customerState = context.read<CustomerInfoCubit>().state;
       if (customerState is! CustomerInfoSuccess) {
         context.read<CustomerInfoCubit>().load();
@@ -80,6 +83,10 @@ class _MaintenanceTabViewState extends State<MaintenanceTabView> {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = CacheHelper.getData<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+    if (isGuest) {
+      return const LoginRequiredView();
+    }
     final textTheme = Theme.of(context).textTheme;
     return BlocBuilder<JobOrdersCubit, JobOrdersState>(
       builder: (context, state) {

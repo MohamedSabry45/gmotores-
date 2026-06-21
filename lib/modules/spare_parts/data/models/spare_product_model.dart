@@ -14,6 +14,7 @@ class SpareProductModel extends SpareProduct {
     required super.subCategoryId,
     required super.subCategoryName,
     required super.compatibility,
+    super.imageUrl,
   });
 
   factory SpareProductModel.fromJson(Map<String, dynamic> json) {
@@ -72,6 +73,7 @@ class SpareProductModel extends SpareProduct {
       subCategoryId: subCategoryId,
       subCategoryName: subCategoryName,
       compatibility: compatibility,
+      imageUrl: json['image_url']?.toString(),
     );
   }
 }

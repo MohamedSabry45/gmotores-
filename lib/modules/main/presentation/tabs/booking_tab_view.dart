@@ -10,6 +10,7 @@ import 'package:reservation_workshop/core/components/toasters.dart';
 import 'package:reservation_workshop/core/network/local/cache_helper.dart';
 import 'package:reservation_workshop/core/utils/strings/prefkeys.dart';
 import 'package:reservation_workshop/core/widgets/app_card.dart';
+import 'package:reservation_workshop/core/widgets/login_required_view.dart';
 import 'package:reservation_workshop/modules/branch/domain/entities/branch.dart';
 import 'package:reservation_workshop/modules/branch/presentation/cubits/branch_cubit/branch_cubit.dart';
 import 'package:reservation_workshop/modules/branch/presentation/cubits/branch_cubit/branch_state.dart';
@@ -47,6 +48,8 @@ class _BookingTabViewState extends State<BookingTabView> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final isGuest = CacheHelper.getData<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+      if (isGuest) return;
       context.read<CustomerInfoCubit>().load();
       context.read<BranchCubit>().load();
     });
@@ -116,6 +119,10 @@ class _BookingTabViewState extends State<BookingTabView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isGuest = CacheHelper.getData<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+    if (isGuest) {
+      return const LoginRequiredView();
+    }
     return BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
       builder: (context, state) {
         final customerName = state is CustomerInfoSuccess ? state.info.name : '';
@@ -301,6 +308,16 @@ class _BookingTabViewState extends State<BookingTabView> {
                             const SizedBox(height: AppSpacing.lg),
                             SubmitBookingButton(
                               onPressed: () {
+                                final isGuest = CacheHelper.getData<bool>(key: PrefKeys.kIsGuestMode) ?? false;
+                                if (isGuest) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    RoutesName.enterMobileScreen,
+                                    (route) => false,
+                                  );
+                                  return;
+                                }
+
                                 final carId = _selectedCarId;
                                 final branchId = _selectedBranchId;
                                 final serviceId = _selectedServiceId;

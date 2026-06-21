@@ -12,7 +12,28 @@
           "package_name": "com.gmotors.com"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "424907866933-bb991eps0vvhetsnui96hlga63mtheut.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gmotors.com",
+            "certificate_hash": "a8e17f1e77ce3311f71d229c4b1a1d42f995893c"
+          }
+        },
+        {
+          "client_id": "424907866933-er65ccvuuj2l87isheacl4rj3tfl4bu3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gmotors.com",
+            "certificate_hash": "5a0b422273d9eb09e9f55e0be56224d9f41aa46d"
+          }
+        },
+        {
+          "client_id": "424907866933-mbq6tctiisma7tipkoqqqp7cohlraojs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBObzLqiWDfU9r5d2lQUDlL07DA6FC0mBI"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424907866933-mbq6tctiisma7tipkoqqqp7cohlraojs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

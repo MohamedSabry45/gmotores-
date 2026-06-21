@@ -9,10 +9,20 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   late final ProductsRemoteDataSource _remote = ProductsRemoteDataSource();
 
-  Future<void> load({int perPage = -1}) async {
+  Future<void> load({
+    int perPage = 30,
+    int page = 1,
+    int businessId = 1,
+    int locationId = 1,
+  }) async {
     emit(const ProductsLoading());
     try {
-      final products = await _remote.getProducts(perPage: perPage);
+      final products = await _remote.getProducts(
+        perPage: perPage,
+        page: page,
+        businessId: businessId,
+        locationId: locationId,
+      );
       emit(ProductsSuccess(products));
     } catch (e) {
       emit(ProductsError(e.toString()));

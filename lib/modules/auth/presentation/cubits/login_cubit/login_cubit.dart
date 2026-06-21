@@ -34,6 +34,7 @@ class LoginCubit extends Cubit<LoginState> {
       if (session.token.trim().isNotEmpty) {
         AppConstants.token = session.token;
         await CacheHelper.saveData(key: PrefKeys.kAccessToken, value: session.token);
+        await CacheHelper.saveData(key: PrefKeys.kIsGuestMode, value: false);
       }
       emit(LoginSuccess(session));
     } catch (e) {

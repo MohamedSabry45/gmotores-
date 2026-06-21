@@ -7,6 +7,7 @@ class TaxonomyCategoryModel extends TaxonomyCategory {
     required super.parentId,
     required super.categoryType,
     required super.subCategories,
+    super.logo,
   });
 
   factory TaxonomyCategoryModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +27,7 @@ class TaxonomyCategoryModel extends TaxonomyCategory {
       parentId: asInt(json['parent_id']),
       categoryType: json['category_type']?.toString() ?? '',
       subCategories: subs,
+      logo: json['logo']?.toString(),
     );
   }
 }

@@ -19,7 +19,8 @@ class NotificationService {
     if (_initialized) return;
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidInit);
+    const iosInit = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
 
     await _plugin.initialize(initSettings);
 
@@ -27,6 +28,11 @@ class NotificationService {
     if (android != null) {
       await android.createNotificationChannel(_androidChannel);
       await android.requestNotificationsPermission();
+    }
+
+    final ios = _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+    if (ios != null) {
+      await ios.requestPermissions(alert: true, badge: true, sound: true);
     }
 
     _initialized = true;
@@ -48,7 +54,13 @@ class NotificationService {
       enableVibration: true,
     );
 
-    final details = NotificationDetails(android: androidDetails);
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _plugin.show(
       Random().nextInt(1 << 31),
@@ -88,7 +100,13 @@ class NotificationService {
       icon: android?.smallIcon,
     );
 
-    final details = NotificationDetails(android: androidDetails);
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _plugin.show(
       Random().nextInt(1 << 31),

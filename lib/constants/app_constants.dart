@@ -1,5 +1,5 @@
 class AppConstants {
-  static String kBaseUrl = 'https://erp.carserv.pro';
+  static String kBaseUrl = 'https://erp.gmotors-eg.com';
   static bool mockAuth = true;
   static String? kClientId;
   static String? kClientSecret;

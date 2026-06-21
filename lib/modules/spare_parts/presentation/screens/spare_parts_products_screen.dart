@@ -4,8 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reservation_workshop/config/style/app_colors.dart';
 import 'package:reservation_workshop/modules/spare_parts/domain/entities/taxonomy_category.dart';
 import 'package:reservation_workshop/modules/spare_parts/domain/entities/spare_product.dart';
+import 'package:reservation_workshop/modules/customer/presentation/cubits/customer_info_cubit/customer_info_cubit.dart';
+import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/cart_cubit/cart_cubit_exports.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/products_cubit/products_cubit.dart';
 import 'package:reservation_workshop/modules/spare_parts/presentation/cubits/products_cubit/products_state.dart';
+import 'package:reservation_workshop/modules/spare_parts/presentation/screens/spare_parts_cart_screen.dart';
 
 class SparePartsProductsScreen extends StatefulWidget {
   final TaxonomyCategory category;
@@ -21,8 +24,6 @@ class SparePartsProductsScreen extends StatefulWidget {
 
 class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
   TaxonomyCategory? _selectedSub;
-  int _cartCount = 0;
-  int _cartPulseTick = 0;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       try {
-        context.read<ProductsCubit>().load(perPage: -1);
+        context.read<ProductsCubit>().load(perPage: 30, businessId: 1, locationId: 1);
       } catch (_) {}
     });
   }
@@ -39,11 +40,36 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
     setState(() => _selectedSub = sub);
   }
 
-  void _addToCart() {
-    setState(() {
-      _cartCount += 1;
-      _cartPulseTick += 1;
-    });
+  void _addToCart(SpareProduct product) {
+    final variationId = product.id;
+    context.read<CartCubit>().addProduct(product: product, variationId: variationId);
+  }
+
+  void _openCart() {
+    CustomerInfoCubit? customerInfo;
+    try {
+      customerInfo = context.read<CustomerInfoCubit>();
+    } catch (_) {
+      customerInfo = null;
+    }
+
+    try {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<void>(
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider<CartCubit>.value(value: context.read<CartCubit>()),
+              if (customerInfo != null) BlocProvider<CustomerInfoCubit>.value(value: customerInfo),
+            ],
+            child: const SparePartsCartScreen(),
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
   Future<void> _openCompatibilitySheet(SpareProduct product) async {
@@ -208,10 +234,15 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
       appBar: AppBar(
         title: Text(category.name),
         actions: [
-          _CartActionButton(
-            count: _cartCount,
-            pulseTick: _cartPulseTick,
-            onTap: () {},
+          BlocBuilder<CartCubit, CartState>(
+            builder: (context, state) {
+              final count = state is CartUpdated ? state.totalQuantity : 0;
+              return _CartActionButton(
+                count: count,
+                pulseTick: count,
+                onTap: _openCart,
+              );
+            },
           ),
         ],
       ),
@@ -226,10 +257,21 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      'assets/images/bummy.jpg',
-                      fit: BoxFit.cover,
-                    ),
+                    widget.category.logo != null && widget.category.logo!.isNotEmpty
+                        ? Image.network(
+                            widget.category.logo!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/bummy.jpg',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            'assets/images/bummy.jpg',
+                            fit: BoxFit.cover,
+                          ),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -319,7 +361,7 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
                           ),
                           const SizedBox(height: 12),
                           ElevatedButton(
-                            onPressed: () => context.read<ProductsCubit>().load(perPage: -1),
+                            onPressed: () => context.read<ProductsCubit>().load(perPage: 30, businessId: 1, locationId: 1),
                             child: const Text('Retry'),
                           ),
                         ],
@@ -354,7 +396,8 @@ class _SparePartsProductsScreenState extends State<SparePartsProductsScreen> {
                         brand: p.brandName,
                         price: _formatPrice(p.defaultSellPrice),
                         qty: p.qtyAvailable,
-                        onAdd: _addToCart,
+                        imageUrl: p.imageUrl,
+                        onAdd: () => _addToCart(p),
                       ),
                     );
                   },
@@ -422,6 +465,7 @@ class _ProductCard extends StatelessWidget {
   final String? brand;
   final String price;
   final double qty;
+  final String? imageUrl;
   final VoidCallback onAdd;
 
   const _ProductCard({
@@ -430,6 +474,7 @@ class _ProductCard extends StatelessWidget {
     required this.brand,
     required this.price,
     required this.qty,
+    this.imageUrl,
     required this.onAdd,
   });
 
@@ -439,148 +484,252 @@ class _ProductCard extends StatelessWidget {
     final qtyText = qty.toStringAsFixed(2);
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      child: Ink(
-        padding: const EdgeInsets.all(14),
+      borderRadius: BorderRadius.circular(20),
+      elevation: 3,
+      shadowColor: Colors.black.withOpacity(0.08),
+      child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.brandOutline),
-          boxShadow: const [
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.brandOutline.withOpacity(0.3)),
+          boxShadow: [
             BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 12,
-              offset: Offset(0, 6),
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.white2,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.brandOutline),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Product Image - Larger and more prominent
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: AppColors.white2,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                  border: Border.all(
+                    color: AppColors.brandOutline.withOpacity(0.2),
+                    width: 0.5,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                  child: imageUrl != null && imageUrl!.isNotEmpty
+                      ? Image.network(
+                          imageUrl!,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppColors.brandPrimary.withOpacity(0.1),
+                                    AppColors.brandPrimary.withOpacity(0.05),
+                                  ],
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.build_outlined,
+                                color: AppColors.brandPrimary,
+                                size: 32,
+                              ),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: AppColors.white2,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
+                                ),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.brandPrimary.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.brandPrimary.withOpacity(0.1),
+                                AppColors.brandPrimary.withOpacity(0.05),
+                              ],
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.build_outlined,
+                            color: AppColors.brandPrimary,
+                            size: 32,
+                          ),
+                        ),
+                ),
               ),
-              child: const Icon(Icons.build_outlined, color: AppColors.brandPrimary, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              
+              // Product Details
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.brandDark,
+                      // Title and Price
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.brandDark,
+                                height: 1.2,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.brandPrimarySoft2,
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: AppColors.brandPrimarySoft),
-                        ),
-                        child: Text(
-                          '$price EGP',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.brandPrimary,
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.brandPrimary,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.brandPrimary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              '$price EGP',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Text(
-                        'Part Number :',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.grey7,
-                        ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Part Number
+                      _InfoRow(
+                        label: 'Part Number',
+                        value: sku,
+                        labelColor: AppColors.grey7,
                       ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          sku,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.brandDark,
-                          ),
-                        ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Brand
+                      _InfoRow(
+                        label: 'Brand',
+                        value: (brand ?? '').trim().isEmpty ? '-' : brand!.trim(),
+                        labelColor: AppColors.grey7,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Text(
-                        'Brand:',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.grey7,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          (brand ?? '').trim().isEmpty ? '-' : brand!.trim(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.brandDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.white2,
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: AppColors.brandOutline),
-                        ),
-                        child: Text(
-                          'qty $qtyText',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.brandDark,
-                          ),
-                        ),
-                      ),
+                      
                       const Spacer(),
-                      _AddButton(onTap: onAdd),
+                      
+                      // Add button only
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          _AddButton(onTap: onAdd),
+                        ],
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color labelColor;
+
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.labelColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 80,
+          child: Text(
+            '$label:',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: labelColor,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.brandDark,
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -608,24 +757,34 @@ class _AddButtonState extends State<_AddButton> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       onTap: () {
         widget.onTap();
         _animate();
       },
       child: AnimatedScale(
-        scale: _pressed ? 1.12 : 1.0,
+        scale: _pressed ? 1.15 : 1.0,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOutBack,
         child: Container(
-          width: 34,
-          height: 34,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
-            color: AppColors.brandPrimarySoft2,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.brandPrimarySoft),
+            color: AppColors.brandPrimary,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandPrimary.withOpacity(0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-          child: const Icon(Icons.add, color: AppColors.brandPrimary, size: 18),
+          child: const Icon(
+            Icons.add_shopping_cart_outlined,
+            color: Colors.white,
+            size: 20,
+          ),
         ),
       ),
     );

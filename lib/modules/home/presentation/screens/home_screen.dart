@@ -39,10 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int? _selectedCarId;
   String? _selectedCarLabel;
+  bool _isGuest = false;
 
   @override
   void initState() {
     super.initState();
+    _loadGuestMode();
     _loadSelectedCar();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -52,6 +54,18 @@ class _HomeScreenState extends State<HomeScreen> {
         context.read<BookingsCubit>().load();
       } catch (_) {}
     });
+  }
+
+  Future<void> _loadGuestMode() async {
+    final isGuest = await _isGuestMode();
+    if (!mounted) return;
+    setState(() {
+      _isGuest = isGuest;
+    });
+  }
+
+  Future<bool> _isGuestMode() async {
+    return await CacheHelper.getDataAsync<bool>(key: PrefKeys.kIsGuestMode) ?? false;
   }
 
   Future<void> _loadSelectedCar() async {
@@ -508,13 +522,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: BlocBuilder<CustomerInfoCubit, CustomerInfoState>(
               builder: (context, customerState) {
                 final customerName = customerState is CustomerInfoSuccess ? customerState.info.name.trim() : '';
+                final isGuestUser = _isGuest || customerName.isEmpty;
                 final cars = customerState is CustomerInfoSuccess ? customerState.info.cars : const <CustomerCar>[];
                 final cachedLabel = (_selectedCarLabel ?? '').trim();
                 final selectedFromList = _selectedCarId != null ? cars.where((c) => c.id == _selectedCarId).toList() : const <CustomerCar>[];
                 final selectedCarLabel = selectedFromList.isNotEmpty ? _carLabel(selectedFromList.first) : cachedLabel;
 
-                final greetingText = customerName.isEmpty
-                    ? t(context, 'home.greeting', ar: 'مرحبا', en: 'Hello')
+                final greetingText = isGuestUser
+                    ? t(context, 'home.greeting_guest', ar: 'مرحبا، ضيف', en: 'Hello, Guest')
                     : t(
                         context,
                         'home.greeting_named',
